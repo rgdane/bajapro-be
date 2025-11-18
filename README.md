@@ -83,21 +83,6 @@
 
 App run on <http://localhost:5000>
 
-## Using Generator
-
-1. Masuk `src` directory
-2. Run command
-
-   ```javascript
-   // Untuk Generate API Layer Files
-   ./generator api:generate <entities>
-
-   // Untuk Generate PKG Layer Files
-   ./generator pkg:generate <entities>
-   ```
-
-# Auto-Reload dengan Air
-
 1. Masuk `src` directory
 2. Pastikan `air` sudah terinstall
 
