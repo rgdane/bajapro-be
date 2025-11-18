@@ -1,0 +1,15 @@
+.vscode
+src/main
+cli
+src/generator
+src/generator.exe
+src/server
+src/.env
+src/tmp
+src/.air.toml
+src/server.exe
+src/go.sum
+js-script
+src/vendor
+go.sum
+*.sql
