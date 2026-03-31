@@ -10,8 +10,7 @@ import (
 func InitContainer() *container.AppContainer {
 	config.InitPostgres()
 	config.InitFirebaseApp()
-	config.InitBucketApp()
-	config.InitNeo4j()
+	// config.InitNeo4j()
 
 	// migrations.Migrate()
 	// seeders.InitSeeder(config.DB)
