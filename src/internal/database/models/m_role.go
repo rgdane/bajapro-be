@@ -7,7 +7,7 @@ type MRole struct {
 	RoleName   string     `gorm:"size:50;not null" json:"role_name"`
 	IsActive   bool       `gorm:"default:true" json:"isactive"`
 	CreatedAt  time.Time  `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt  *time.Time `gorm:"autoUpdateTime" json:"updated_at"`
+	UpdatedAt  time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 	UserCreate int64      `json:"user_create"`
 	UserUpdate int64      `json:"user_update"`
 }

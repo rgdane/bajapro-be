@@ -10,7 +10,7 @@ type MClass struct {
 	ClassCode  string     `gorm:"column:class_code;size:50" json:"class_code"`
 	IsActive   bool       `gorm:"column:isactive;default:true" json:"isactive"`
 	CreatedAt  time.Time  `gorm:"column:created_at;autoCreateTime" json:"created_at"`
-	UpdatedAt  *time.Time `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
+	UpdatedAt  time.Time `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
 	UserCreate int64      `gorm:"column:user_create" json:"user_create"`
 	UserUpdate int64      `gorm:"column:user_update" json:"user_update"`
 
