@@ -13,18 +13,17 @@ func Migrate() {
 		log.Fatalf("❌ Failed to create sequences: %v", err)
 	}
 
-	// if err := SetupJoinTable(db); err != nil {
-	// 	log.Fatalf("❌ Failed to setup join table: %v", err)
-	// }
+	if err := SetupJoinTable(db); err != nil {
+		log.Fatalf("❌ Failed to setup join table: %v", err)
+	}
 
 	err := db.AutoMigrate(
-		&models.User{},
-		&models.Department{},
-		&models.Division{},
-		&models.Level{},
-		&models.Position{},
-		&models.Title{},
-		&models.Role{},
+		// &models.Department{},
+		// &models.Division{},
+		// &models.Level{},
+		// &models.Position{},
+		// &models.Title{},
+		// &models.Role{},
 		&models.MRole{},
 		&models.MClass{},
 		&models.MLevel{},
@@ -43,7 +42,7 @@ func Migrate() {
 		&models.TEssayQuestion{},
 		&models.TEssayAnswer{},
 		&models.TGenerationHistory{},
-		&models.Permission{},
+		// &models.Permission{},
 	)
 
 	// if err := NotificationPriorityEnum(db); err != nil {
