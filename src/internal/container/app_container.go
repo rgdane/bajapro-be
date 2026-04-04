@@ -12,18 +12,20 @@ type AppContainer struct {
 	RoleHandler       *handlers.RoleHandler
 	TitleHandler      *handlers.TitleHandler
 	UserHandler       *handlers.UserHandler
+	MUserHandler      *handlers.MUserHandler
 	DivisionHandler   *handlers.DivisionHandler
 }
 
 func NewAppContainer() *AppContainer {
 	return &AppContainer{
 		AuthHandler:       InitAuthContainer(),
-		LevelHandler:      InitLevelContainer(),
-		PermissionHandler: InitPermissionContainer(),
-		PositionHandler:   InitPositionContainer(),
-		RoleHandler:       InitRoleContainer(),
-		TitleHandler:      InitTitleContainer(),
-		UserHandler:       InitUserContainer(),
-		DivisionHandler:   InitDivisionContainer(),
+		// LevelHandler:      InitLevelContainer(),
+		// PermissionHandler: InitPermissionContainer(),
+		// PositionHandler:   InitPositionContainer(),
+		// RoleHandler:       InitRoleContainer(),
+		// TitleHandler:      InitTitleContainer(),
+		// UserHandler:       InitUserContainer(),
+		MUserHandler:      InitMUserContainer(),
+		// DivisionHandler:   InitDivisionContainer(),
 	}
 }
