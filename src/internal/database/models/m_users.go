@@ -13,7 +13,7 @@ type MUsers struct {
 	InstansiSekolah   string     `gorm:"column:instansi_sekolah;size:100" json:"instansi_sekolah"`
 	IsActive          bool       `gorm:"column:isactive;default:true" json:"isactive"`
 	CreatedAt         time.Time  `gorm:"column:created_at;autoCreateTime" json:"created_at"`
-	UpdatedAt         *time.Time `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
+	UpdatedAt         time.Time `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
 	UserCreate        int64      `gorm:"column:user_create" json:"user_create"`
 	UserUpdate        int64      `gorm:"column:user_update" json:"user_update"`
 
