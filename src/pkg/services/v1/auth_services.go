@@ -14,33 +14,30 @@ import (
 )
 
 type AuthService interface {
-	Login(email, password string) (*models.User, error)
-	GetProfile(token string) (*models.User, error)
+	Login(email, password string) (*models.MUsers, error)
+	GetProfile(token string) (*models.MUsers, error)
 	GenerateToken(userID int64, name string) (string, error)
 	DecodeToken(token string) (jwt.MapClaims, error)
 }
 
 type authService struct {
-	repo sql.UserRepository
+	repo sql.MUsersRepository
 }
 
-func NewAuthService(userRepo sql.UserRepository) *authService {
+func NewAuthService(userRepo sql.MUsersRepository) *authService {
 	return &authService{repo: userRepo}
 }
 
-func (s *authService) Login(email, password string) (*models.User, error) {
+func (s *authService) Login(email, password string) (*models.MUsers, error) {
 	user, err := s.repo.
-		WithPreloads("HasRoles.HasPermissions").
-		FindUserByEmail(email)
+		WithPreloads("Role", "Class").
+		FindMUserByEmail(email)
 
 	if err != nil {
 		return nil, gorm_err.TranslateGormError(err)
 	}
 
-	log.Printf("User ID: %d, Roles count: %d", user.ID, len(user.HasRoles))
-	for i, role := range user.HasRoles {
-		log.Printf("Role %d: %+v", i, role)
-	}
+	log.Printf("User ID: %d, Role ID: %d", user.ID, user.RoleID)
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 		return nil, bcrypt_err.TranslateBcryptError(err)
@@ -49,7 +46,7 @@ func (s *authService) Login(email, password string) (*models.User, error) {
 	return user, nil
 }
 
-func (s *authService) GetProfile(token string) (user *models.User, err error) {
+func (s *authService) GetProfile(token string) (user *models.MUsers, err error) {
 	claims, err := s.DecodeToken(token)
 	if err != nil {
 		return nil, err
@@ -59,7 +56,7 @@ func (s *authService) GetProfile(token string) (user *models.User, err error) {
 	if !ok {
 		return nil, err
 	}
-	user, err = s.repo.WithPreloads("HasRoles.HasPermissions", "HasSquads.HasProject", "HasTitle.HasPosition").FindUserByID(int64(userID))
+	user, err = s.repo.WithPreloads("Role", "Class").FindMUserByID(int64(userID))
 	if err != nil {
 		return nil, err
 	}

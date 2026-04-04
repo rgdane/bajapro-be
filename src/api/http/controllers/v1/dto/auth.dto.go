@@ -8,18 +8,19 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	ID       int64         `json:"id"`
-	Name     string        `json:"name"`
-	Email    string        `json:"email"`
-	Token    string        `json:"token"`
-	HasRoles []models.Role `json:"has_roles"`
+	ID    int64          `json:"id"`
+	Name  string         `json:"name"`
+	Email string         `json:"email"`
+	Token string         `json:"token"`
+	Role  *models.MRole  `json:"role"`
+	Class *models.MClass `json:"class"`
 }
 
 type ProfileResponse struct {
-	ID        int64          `json:"id"`
-	Name      string         `json:"name"`
-	Email     string         `json:"email"`
-	IsPasswordDefault bool `json:"is_password_default"`
-	HasRoles  []models.Role  `json:"has_roles"`
-	HasTitle  models.Title   `json:"title"`
+	ID       int64          `json:"id"`
+	Name     string         `json:"name"`
+	Email    string         `json:"email"`
+	IsActive bool           `json:"is_active"`
+	Role     *models.MRole  `json:"role"`
+	Class    *models.MClass `json:"class"`
 }

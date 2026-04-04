@@ -7,7 +7,7 @@ import (
 )
 
 func InitAuthContainer() *handlers.AuthHandler {
-	repo := sql.NewUserRepository()
+	repo := sql.NewMUsersRepository()
 	service := services.NewAuthService(repo)
 	return handlers.NewAuthHandler(service)
 }

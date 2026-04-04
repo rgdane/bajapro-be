@@ -5,33 +5,34 @@ import (
 	"jk-api/internal/database/models"
 )
 
-func AuthModelToDto(data *models.User, token string) (*dto.LoginResponse, error) {
+func AuthModelToDto(data *models.MUsers, token string) (*dto.LoginResponse, error) {
 	if data == nil {
 		return nil, nil
 	}
 
 	response := &dto.LoginResponse{
-		ID:       data.ID,
-		Name:     data.Name,
-		Email:    data.Email,
-		Token:    token,
-		HasRoles: data.HasRoles,
+		ID:    data.ID,
+		Name:  data.Name,
+		Email: data.Email,
+		Token: token,
+		Role:  data.Role,
+		Class: data.Class,
 	}
 	return response, nil
 }
 
-func AuthModelToProfile(data *models.User) (*dto.ProfileResponse, error) {
+func AuthModelToProfile(data *models.MUsers) (*dto.ProfileResponse, error) {
 	if data == nil {
 		return nil, nil
 	}
 
 	response := &dto.ProfileResponse{
-		ID:        data.ID,
-		Name:      data.Name,
-		Email:     data.Email,
-		HasRoles:  data.HasRoles,
-		HasTitle:  data.HasTitle,
-		IsPasswordDefault: data.IsPasswordDefault,
+		ID:       data.ID,
+		Name:     data.Name,
+		Email:    data.Email,
+		Role:     data.Role,
+		Class:    data.Class,
+		IsActive: data.IsActive,
 	}
 	return response, nil
 }
