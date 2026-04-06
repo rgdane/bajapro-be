@@ -3,21 +3,21 @@ package models
 import "time"
 
 type MClass struct {
-	ID         int64      `gorm:"primaryKey;autoIncrement:true;type:serial" json:"id"`
-	TeacherID  int64      `gorm:"column:teacher_id" json:"teacher_id"`
-	ClassName  string     `gorm:"column:class_name;size:100" json:"class_name"`
-	SchoolName string     `gorm:"column:school_name;size:100" json:"school_name"`
-	ClassCode  string     `gorm:"column:class_code;size:50" json:"class_code"`
-	IsActive   bool       `gorm:"column:isactive;default:true" json:"isactive"`
-	CreatedAt  time.Time  `gorm:"column:created_at;autoCreateTime" json:"created_at"`
-	UpdatedAt  *time.Time `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
-	UserCreate int64      `gorm:"column:user_create" json:"user_create"`
-	UserUpdate int64      `gorm:"column:user_update" json:"user_update"`
+    ID         int64      `gorm:"primaryKey;autoIncrement:true" json:"id"`
+    ClassName  string     `gorm:"column:class_name;size:100" json:"class_name"`
+    SchoolName string     `gorm:"column:school_name;size:100" json:"school_name"`
+    ClassCode  string     `gorm:"column:class_code;size:50;uniqueIndex" json:"class_code"`
+    IsActive   bool       `gorm:"column:isactive;default:true" json:"isactive"`
+    CreatedAt  time.Time  `gorm:"autoCreateTime" json:"created_at"`
+    UpdatedAt  *time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 
-	// Foreign Key Relationships
-	Teacher *MUsers `gorm:"foreignKey:TeacherID;references:ID" json:"teacher"`
+    // Relationships
+    // Menampilkan daftar guru di kelas ini
+    Teachers []MUser `gorm:"many2many:m_class_teachers;" json:"teachers"`
+    // Menampilkan daftar siswa di kelas ini
+    Students []MUser `gorm:"foreignKey:ClassID" json:"students"`
 }
 
 func (*MClass) TableName() string {
-	return "m_class"
+	return "m_classes"
 }

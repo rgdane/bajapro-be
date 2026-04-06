@@ -2,26 +2,26 @@ package models
 
 import "time"
 
-type MUsers struct {
-	ID                int64      `gorm:"primaryKey;autoIncrement:true;type:serial" json:"id"`
-	RoleID            int64      `gorm:"column:role_id" json:"role_id"`
-	ClassID           int64      `gorm:"column:class_id" json:"class_id"`
-	Name              string     `gorm:"size:100" json:"name"`
-	Email             string     `gorm:"size:100;uniqueIndex" json:"email"`
-	Password          string     `gorm:"type:text" json:"password"`
-	IsApprovedByAdmin bool       `gorm:"column:is_approved_by_admin;default:false" json:"is_approved_by_admin"`
-	InstansiSekolah   string     `gorm:"column:instansi_sekolah;size:100" json:"instansi_sekolah"`
-	IsActive          bool       `gorm:"column:isactive;default:true" json:"isactive"`
-	CreatedAt         time.Time  `gorm:"column:created_at;autoCreateTime" json:"created_at"`
-	UpdatedAt         *time.Time `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
-	UserCreate        int64      `gorm:"column:user_create" json:"user_create"`
-	UserUpdate        int64      `gorm:"column:user_update" json:"user_update"`
+type MUser struct {
+    ID                int64      `gorm:"primaryKey;autoIncrement:true" json:"id"`
+    RoleID            int64      `gorm:"column:role_id" json:"role_id"`
+    // ClassID digunakan untuk Siswa. Gunakan pointer *int64 agar bisa NULL untuk Admin/Guru
+    ClassID           *int64     `gorm:"column:class_id" json:"class_id"`
+    Name              string     `gorm:"size:100" json:"name"`
+    Email             string     `gorm:"size:100;uniqueIndex" json:"email"`
+    Password          string     `gorm:"type:text" json:"-"` // Sebaiknya password tidak muncul di JSON
+    IsApprovedByAdmin bool       `gorm:"column:is_approved_by_admin;default:false" json:"is_approved_by_admin"`
+    IsActive          bool       `gorm:"column:isactive;default:true" json:"isactive"`
+    CreatedAt         time.Time  `gorm:"autoCreateTime" json:"created_at"`
+    UpdatedAt         *time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 
-	// Foreign Key Relationships
-	Role  *MRole  `gorm:"foreignKey:RoleID;references:ID" json:"role"`
-	Class *MClass `gorm:"foreignKey:ClassID;references:ID" json:"class"`
+    // Relationships
+    Role    *MRole   `gorm:"foreignKey:RoleID" json:"role"`
+    Class   *MClass  `gorm:"foreignKey:ClassID" json:"class"` // Relasi milik Siswa
+    // Relasi Many-to-Many untuk Guru
+    TeachingClasses []MClass `gorm:"many2many:m_class_teachers;" json:"teaching_classes"`
 }
 
-func (*MUsers) TableName() string {
+func (*MUser) TableName() string {
 	return "m_users"
 }

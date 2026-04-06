@@ -15,8 +15,8 @@ type TStudentCourse struct {
 	UserUpdate int64      `gorm:"column:user_update" json:"user_update"`
 
 	// Foreign Key Relationships
-	User    *MUsers         `gorm:"foreignKey:UserID;references:ID" json:"user"`
-	Student *MUsers         `gorm:"foreignKey:StudentID;references:ID" json:"student"`
+	User    *MUser          `gorm:"foreignKey:UserID;references:ID" json:"user"`
+	Student *MUser          `gorm:"foreignKey:StudentID;references:ID" json:"student"`
 	Badge   *MBadgeSettings `gorm:"foreignKey:BadgeID;references:ID" json:"badge"`
 }
 

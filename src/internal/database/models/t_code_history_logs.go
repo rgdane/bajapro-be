@@ -15,7 +15,7 @@ type TCodeHistoryLogs struct {
 	UserCreate     int64      `gorm:"column:user_create" json:"user_create"`
 	UserUpdate     int64      `gorm:"column:user_update" json:"user_update"`
 	// Foreign Key Relationships
-	User         *MUsers        `gorm:"foreignKey:UserID;references:ID" json:"user"`
+	User         *MUser         `gorm:"foreignKey:UserID;references:ID" json:"user"`
 	CodeQuestion *TCodeQuestion `gorm:"foreignKey:CodeQuestionID;references:ID" json:"code_question"`
 }
 
