@@ -12,8 +12,9 @@ const TableNameUser = "users"
 
 // User mapped from table <users>
 type User struct {
-	ID                int64          `gorm:"primaryKey;autoIncrement:false;type:bigint;default:nextval('users_seq'::regclass)" json:"id"`
-	TitleID           *int64         `gorm:"column:title_id;index:idx_users_title_id" json:"title_id"`
+	ID     			  int64 		 `gorm:"primaryKey;autoIncrement:false;type:bigint;default:nextval('users_seq'::regclass)" json:"id"`
+	RoleID 			  int64 		 `gorm:"column:role_id" json:"role_id"`
+	ClassID           *int64         `gorm:"column:class_id" json:"class_id"`
 	Code              *string        `gorm:"column:code;size:50;unique;index:idx_users_code" json:"code"`
 	Name              string         `gorm:"column:name;size:255;not null;index:idx_users_name" json:"name"`
 	Email             string         `gorm:"column:email;size:255;not null;unique;index:idx_users_email" json:"email"`
@@ -28,8 +29,9 @@ type User struct {
 	DeletedAt         gorm.DeletedAt `gorm:"index:idx_users_deleted_at" json:"deleted_at"`
 
 	// Relations
-	HasTitle        Title         `gorm:"foreignKey:TitleID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"title"`
-	HasRoles        []Role        `gorm:"many2many:user_has_roles;constraint:OnDelete:CASCADE;" json:"has_roles"`
+	HasRoles []Role `gorm:"many2many:user_has_roles;constraint:OnDelete:CASCADE;" json:"has_roles"`
+	HasClass *MClass `gorm:"foreignKey:ClassID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"class"`
+	TeachingClasses []MClass `gorm:"many2many:m_class_teachers;" json:"teaching_classes"`
 }
 
 func (*User) TableName() string {

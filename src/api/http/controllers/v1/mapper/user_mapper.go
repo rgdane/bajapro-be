@@ -31,7 +31,7 @@ func CreateUserDtoToModel(dto *dto.CreateUserDto) (*models.User, error) {
 			}
 			return string(generatedPassword)
 		}(),
-		TitleID: dto.TitleID,
+		// TitleID: dto.TitleID,
 		IsPasswordDefault: func() bool {
 			if dto.IsPasswordDefault != nil {
 				return *dto.IsPasswordDefault
@@ -71,9 +71,9 @@ func UpdateUserDtoToModel(dto *dto.UpdateUserDto) (
 		payload["is_password_default"] = *dto.IsPasswordDefault
 	}
 
-	if dto.TitleID != nil {
-		payload["title_id"] = *dto.TitleID
-	}
+	// if dto.TitleID != nil {
+	// 	payload["title_id"] = *dto.TitleID
+	// }
 	if dto.RoleIDs != nil {
 		var roles []models.Role
 		for _, id := range *dto.RoleIDs {
