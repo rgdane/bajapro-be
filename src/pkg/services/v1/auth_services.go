@@ -59,7 +59,7 @@ func (s *authService) GetProfile(token string) (user *models.User, err error) {
 	if !ok {
 		return nil, err
 	}
-	user, err = s.repo.WithPreloads("HasRoles.HasPermissions", "HasSquads.HasProject", "HasTitle.HasPosition").FindUserByID(int64(userID))
+	user, err = s.repo.WithPreloads("HasRoles.HasPermissions", "HasClass").FindUserByID(int64(userID))
 	if err != nil {
 		return nil, err
 	}

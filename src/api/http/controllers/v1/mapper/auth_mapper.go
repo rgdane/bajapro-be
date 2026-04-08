@@ -30,7 +30,7 @@ func AuthModelToProfile(data *models.User) (*dto.ProfileResponse, error) {
 		Name:      data.Name,
 		Email:     data.Email,
 		HasRoles:  data.HasRoles,
-		HasTitle:  data.HasTitle,
+		HasClass:  data.HasClass,
 		IsPasswordDefault: data.IsPasswordDefault,
 	}
 	return response, nil

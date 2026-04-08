@@ -21,5 +21,5 @@ type ProfileResponse struct {
 	Email     string         `json:"email"`
 	IsPasswordDefault bool `json:"is_password_default"`
 	HasRoles  []models.Role  `json:"has_roles"`
-	HasTitle  models.Title   `json:"title"`
+	HasClass  *models.MClass `json:"class,omitempty"`
 }
