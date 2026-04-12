@@ -16,5 +16,5 @@ func MClassRoute(router fiber.Router, c *container.AppContainer) {
 	app.Post("/", controllers.CreateMClasses(c))
 	app.Get("/:id", controllers.GetMClassByID(c))
 	app.Put("/:id", controllers.UpdateMClasses(c))
-	app.Delete("/:id", controllers.DeleteRoles(c))
+	app.Delete("/:id", controllers.DeleteMClasses(c))
 }

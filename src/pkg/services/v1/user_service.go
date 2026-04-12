@@ -130,7 +130,7 @@ func (s *userService) GetAllUsers(filter dto.UserFilterDto) ([]models.User, erro
 	}
 
 	if filter.Preload {
-		repo = repo.WithPreloads("HasRoles", "HasSquads", "HasTitle", "HasBacklogItems", "HasBacklogItems.HasStatus")
+		repo = repo.WithPreloads("HasRoles", "HasClass", "TeachingClasses")
 	}
 	if filter.Limit != 0 {
 		repo = repo.WithLimit(int(filter.Limit))

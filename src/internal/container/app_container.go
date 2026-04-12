@@ -13,6 +13,8 @@ type AppContainer struct {
 	TitleHandler      *handlers.TitleHandler
 	UserHandler       *handlers.UserHandler
 	DivisionHandler   *handlers.DivisionHandler
+	MClassHandler     *handlers.MClassHandler
+	MBadgeSettingsHandler *handlers.MBadgeSettingsHandler
 }
 
 func NewAppContainer() *AppContainer {
@@ -25,5 +27,7 @@ func NewAppContainer() *AppContainer {
 		TitleHandler:      InitTitleContainer(),
 		UserHandler:       InitUserContainer(),
 		DivisionHandler:   InitDivisionContainer(),
+		MClassHandler:     InitMClassContainer(),
+		MBadgeSettingsHandler: InitMBadgeSettingsContainer(),
 	}
 }
