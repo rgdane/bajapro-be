@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type MClass struct {
     ID         int64      `gorm:"primaryKey;autoIncrement:true" json:"id"`
@@ -10,14 +14,15 @@ type MClass struct {
     IsActive   bool       `gorm:"column:isactive;default:true" json:"isactive"`
     CreatedAt  time.Time  `gorm:"autoCreateTime" json:"created_at"`
     UpdatedAt  *time.Time `gorm:"autoUpdateTime" json:"updated_at"`
+    DeletedAt  gorm.DeletedAt `gorm:"index:idx_class_deleted_at" json:"deleted_at"`
 
     // Relationships
     // Menampilkan daftar guru di kelas ini
-    Teachers []MUser `gorm:"many2many:m_class_teachers;" json:"teachers"`
+    Teachers []User `gorm:"many2many:m_class_teachers;" json:"teachers"`
     // Menampilkan daftar siswa di kelas ini
-    Students []MUser `gorm:"foreignKey:ClassID" json:"students"`
+    Students []User `gorm:"foreignKey:ClassID" json:"students"`
 }
 
 func (*MClass) TableName() string {
-	return "m_classes"
+	return "m_class"
 }
