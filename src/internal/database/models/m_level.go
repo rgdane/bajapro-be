@@ -8,11 +8,10 @@ type MLevel struct {
 	Description string     `gorm:"type:text" json:"description"`
 	IsActive    bool       `gorm:"column:isactive;default:true" json:"isactive"`
 	CreatedAt   time.Time  `gorm:"column:created_at;autoCreateTime" json:"created_at"`
-	UpdatedAt   *time.Time `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
-	UserCreate  int64      `gorm:"column:user_create" json:"user_create"`
-	UserUpdate  int64      `gorm:"column:user_update" json:"user_update"`
+	UpdatedAt   time.Time `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
+ 	DeletedAt   time.Time  `gorm:"column:deleted_at;index" json:"deleted_at,omitempty"`
 }
 
 func (*MLevel) TableName() string {
-	return "m_level"
+	return "m_levels"
 }
