@@ -7,6 +7,8 @@ func InitSeeder(db *gorm.DB) {
 	SeedRoles(db)
 	SeedAdmin(db)
 	SeedBadgeSettings(db)
+	SeedCourses(db)
+	SeedLevels(db)
 	// SeedFlowcharts(db)
 	// SeedDepartments(db)
 	// SeedDivisions(db)

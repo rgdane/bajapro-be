@@ -14,6 +14,8 @@ func SetupSequenceTable(db *gorm.DB) error {
 		"permissions_seq":     "permissions",
 		"m_classes_seq":        "m_class",
 		"m_badge_settings_seq": "m_badge_settings",
+		"m_courses_seq":        "m_course",
+		"m_levels_seq":         "m_level",
 	}
 
 	for seqName, tableName := range sequences {

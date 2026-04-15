@@ -14,6 +14,8 @@ func SeedPermissions(db *gorm.DB) error {
 		"users":               {"create", "update", "delete", "view", "viewOwn"},
 		"classes":             {"create", "update", "delete", "view", "viewOwn"},
 		"m_badge_settings":      {"create", "update", "delete", "view", "viewOwn"},
+		"m_courses":             {"create", "update", "delete", "view", "viewOwn"},
+		"m_levels":              {"create", "update", "delete", "view", "viewOwn"},
 	}
 
 	for module, actions := range permissionsMap {
