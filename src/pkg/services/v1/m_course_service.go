@@ -87,9 +87,9 @@ func (s *mCourseService) DeleteMCourse(id int64) error {
 
 func (s *mCourseService) GetAllMCourses(filter dto.MCourseFilterDto) ([]models.MCourse, error) {
 	repo := s.repo
-	// if filter.Preload {
-	// 	repo = repo.WithPreloads("Teachers", "Students")
-	// }
+	if filter.Preload {
+		repo = repo.WithPreloads("Lessons")
+	}
 	data, err := repo.FindMCourse()
 	if err != nil {
 		return nil, gorm_err.TranslateGormError(err)
@@ -99,9 +99,9 @@ func (s *mCourseService) GetAllMCourses(filter dto.MCourseFilterDto) ([]models.M
 
 func (s *mCourseService) GetMCourseByID(id int64, filter dto.MCourseFilterDto) (*models.MCourse, error) {
 	repo := s.repo
-	// if filter.Preload {
-	// 	repo = repo.WithPreloads("Teachers", "Students")
-	// }
+	if filter.Preload {
+		repo = repo.WithPreloads("Lessons")
+	}
 	data, err := repo.FindMCourseByID(id)
 	if err != nil {
 		return nil, gorm_err.TranslateGormError(err)

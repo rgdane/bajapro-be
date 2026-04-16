@@ -17,4 +17,7 @@ func Setup(app *fiber.App, c *container.AppContainer) {
 	MClassRoute(api, c)
 	MBadgeSettings(api, c)
 	MCourse(api, c)
+	MLessonRoutes(api, c)
+	MSubLessonRoutes(api, c)
+	MMaterialRoutes(api, c)
 }

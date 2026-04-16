@@ -13,6 +13,9 @@ type AppContainer struct {
 	MClassHandler     *handlers.MClassHandler
 	MBadgeSettingsHandler *handlers.MBadgeSettingsHandler
 	MCourseHandler    *handlers.MCourseHandler
+	MLessonHandler    *handlers.MLessonHandler
+	MSubLessonHandler *handlers.MSubLessonHandler
+	MMaterialHandler  *handlers.MMaterialHandler
 }
 
 func NewAppContainer() *AppContainer {
@@ -25,5 +28,8 @@ func NewAppContainer() *AppContainer {
 		MClassHandler:     InitMClassContainer(),
 		MBadgeSettingsHandler: InitMBadgeSettingsContainer(),
 		MCourseHandler:    InitMCourseContainer(),
+		MLessonHandler:    InitMLessonContainer(),
+		MSubLessonHandler: InitMSubLessonContainer(),
+		MMaterialHandler:  InitMMaterialContainer(),
 	}
 }

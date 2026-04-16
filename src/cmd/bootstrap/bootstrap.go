@@ -11,7 +11,7 @@ func Setup() {
 
 	InitLogger()
 	InitPostgres()
-	InitNeo4j()
+	// InitNeo4j()
 
 	runMigrate()
 	InitFiber()
