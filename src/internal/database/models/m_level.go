@@ -3,7 +3,7 @@ package models
 import "time"
 
 type MLevel struct {
-	ID          int64      `gorm:"primaryKey;autoIncrement:true;type:serial" json:"id"`
+	ID          int64      `gorm:"primaryKey;autoIncrement:true" json:"id"`
 	LevelName   string     `gorm:"column:level_name;size:50" json:"level_name"`
 	Description string     `gorm:"type:text" json:"description"`
 	IsActive    bool       `gorm:"column:isactive;default:true" json:"isactive"`
