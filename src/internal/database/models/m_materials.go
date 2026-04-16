@@ -4,7 +4,7 @@ import "time"
 
 type MMaterials struct {
 	ID              int64      `gorm:"primaryKey;autoIncrement:true;type:serial" json:"id"`
-	SubSessionID    int64      `gorm:"column:sub_session_id" json:"sub_session_id"`
+	SubLessonID    int64      `gorm:"column:sub_lesson_id" json:"sub_lesson_id"`
 	Title           string     `gorm:"size:150" json:"title"`
 	Materials       string     `gorm:"type:text" json:"materials"`
 	URLVideo        string     `gorm:"column:url_video;type:text" json:"url_video"`
@@ -13,12 +13,10 @@ type MMaterials struct {
 	Published       bool       `gorm:"default:false" json:"published"`
 	IsActive        bool       `gorm:"column:isactive;default:true" json:"isactive"`
 	CreatedAt       time.Time  `gorm:"column:created_at;autoCreateTime" json:"created_at"`
-	UpdatedAt       *time.Time `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
-	UserCreate      int64      `gorm:"column:user_create" json:"user_create"`
-	UserUpdate      int64      `gorm:"column:user_update" json:"user_update"`
+	UpdatedAt       time.Time `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
+	DeletedAt       time.Time  `gorm:"column:deleted_at;index" json:"deleted_at,omitempty"`
 
-	// Foreign Key Relationships
-	SubLesson *MSubLesson `gorm:"foreignKey:SubSessionID;references:ID" json:"sub_lesson"`
+	SubLesson *MSubLesson `gorm:"foreignKey:SubLessonID;references:ID" json:"sub_lesson"`
 }
 
 func (*MMaterials) TableName() string {
