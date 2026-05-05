@@ -3,7 +3,7 @@ package models
 import "time"
 
 type MBadgeSettings struct {
-	ID         int64      `gorm:"primaryKey;autoIncrement:true;type:serial" json:"id"`
+	ID         int64      `gorm:"primaryKey;autoIncrement:true" json:"id"`
 	Name       string     `gorm:"size:100" json:"name"`
 	Image      string     `gorm:"type:text" json:"image"`
 	MinScore   int        `gorm:"column:min_score" json:"min_score"`

@@ -3,7 +3,7 @@ package models
 import "time"
 
 type MMaterials struct {
-	ID              int64      `gorm:"primaryKey;autoIncrement:true;type:serial" json:"id"`
+	ID              int64      `gorm:"primaryKey;autoIncrement:true" json:"id"`
 	SubLessonID    int64      `gorm:"column:sub_lesson_id" json:"sub_lesson_id"`
 	Title           string     `gorm:"size:150" json:"title"`
 	Materials       string     `gorm:"type:text" json:"materials"`

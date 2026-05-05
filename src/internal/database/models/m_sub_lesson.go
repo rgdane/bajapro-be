@@ -3,7 +3,7 @@ package models
 import "time"
 
 type MSubLesson struct {
-	ID            int64      `gorm:"primaryKey;autoIncrement:true;type:serial" json:"id"`
+	ID            int64      `gorm:"primaryKey;autoIncrement:true" json:"id"`
 	LessonID      int64      `gorm:"column:lesson_id" json:"lesson_id"`
 	Title         string     `gorm:"size:100" json:"title"`
 	OrderPosition int        `gorm:"column:order_position" json:"order_position"`

@@ -19,7 +19,7 @@ type TEssayAnswer struct {
 	UserUpdate          int64      `gorm:"column:user_update" json:"user_update"`
 
 	// Foreign Key Relationships
-	User          *MUser          `gorm:"foreignKey:UserID;references:ID" json:"user"`
+	User          *User          `gorm:"foreignKey:UserID;references:ID" json:"user"`
 	EssayQuestion *TEssayQuestion `gorm:"foreignKey:EssayQuestionID;references:ID" json:"essay_question"`
 }
 

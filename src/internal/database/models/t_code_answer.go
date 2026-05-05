@@ -15,7 +15,7 @@ type TCodeAnswer struct {
 	UserUpdate     int64      `gorm:"column:user_update" json:"user_update"`
 
 	// Foreign Key Relationships
-	User         *MUser         `gorm:"foreignKey:UserID;references:ID" json:"user"`
+	User         *User         `gorm:"foreignKey:UserID;references:ID" json:"user"`
 	CodeQuestion *TCodeQuestion `gorm:"foreignKey:CodeQuestionID;references:ID" json:"code_question"`
 }
 
