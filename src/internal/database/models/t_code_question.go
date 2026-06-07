@@ -9,14 +9,14 @@ type TCodeQuestion struct {
 	Image        string     `gorm:"type:text" json:"image"`
 	Score        int        `gorm:"column:score" json:"score"`
 	Hint         string     `gorm:"type:text" json:"hint"`
-	IsActive     bool       `gorm:"column:isactive;default:true" json:"isactive"`
 	CreatedAt    time.Time  `gorm:"column:created_at;autoCreateTime" json:"created_at"`
 	UpdatedAt    *time.Time `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
-	UserCreate   int64      `gorm:"column:user_create" json:"user_create"`
-	UserUpdate   int64      `gorm:"column:user_update" json:"user_update"`
 
 	// Foreign Key Relationships
 	SubLesson *MSubLesson `gorm:"foreignKey:SubLessonID;references:ID" json:"sub_lesson"`
+	CodeAnswers []TCodeAnswer `gorm:"foreignKey:CodeQuestionID;references:ID" json:"code_answers"`
+	EssayQuestions []TEssayQuestion `gorm:"foreignKey:CodeQuestionID;references:ID" json:"essay_questions"`
+	CodeHistoryLogs []TCodeHistoryLogs `gorm:"foreignKey:CodeQuestionID;references:ID" json:"code_history_logs"`
 }
 
 func (*TCodeQuestion) TableName() string {
