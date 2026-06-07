@@ -31,15 +31,61 @@ func (h *AuthHandler) Login(req *dto.LoginRequest) (*dto.LoginResponse, string, 
 		return nil, "", err
 	}
 
-	token, err := h.AuthService.GenerateToken(user.ID, user.Name)
+	accessToken, err := h.AuthService.GenerateAccessToken(user)
 	if err != nil {
 		return nil, "", err
 	}
 
-	data, err := mapper.AuthModelToDto(user, token)
+	refreshToken, err := h.AuthService.GenerateRefreshToken(user)
 	if err != nil {
 		return nil, "", err
 	}
 
-	return data, token, nil
+	// 🔥 kirim ke response
+	data, err := mapper.AuthModelToDto(user, accessToken, refreshToken)
+	if err != nil {
+		return nil, "", err
+	}
+
+	// 👉 tambahin refresh token ke DTO
+	data.RefreshToken = refreshToken
+
+	return data, accessToken, nil
+}
+
+func (h *AuthHandler) Logout(token string) error {
+	return h.AuthService.Logout(token)
+}
+
+func (h *AuthHandler) RefreshToken(Token string) (string, error) {
+	return h.AuthService.RefreshToken(Token)
+}
+
+func (h *AuthHandler) Register(req *dto.RegisterRequest) (*dto.LoginResponse, string, error) {
+	user, err := h.AuthService.Register(req)
+	if err != nil {
+		return nil, "", err
+	}
+
+	// ❗ kalau teacher belum approve → jangan kasih token
+	if user.RoleID == 2 && !user.IsApprovedByAdmin {
+		return nil, "", fmt.Errorf("akun teacher menunggu approval admin")
+	}
+
+	accessToken, err := h.AuthService.GenerateAccessToken(user)
+	if err != nil {
+		return nil, "", err
+	}
+
+	refreshToken, err := h.AuthService.GenerateRefreshToken(user)
+	if err != nil {
+		return nil, "", err
+	}
+
+	data, err := mapper.AuthModelToDto(user, accessToken, refreshToken)
+	if err != nil {
+		return nil, "", err
+	}
+
+	return data, accessToken, nil
 }
