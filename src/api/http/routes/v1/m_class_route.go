@@ -10,7 +10,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func MClassRoute(router fiber.Router, c *container.AppContainer) {
+func MClassRoutes(router fiber.Router, c *container.AppContainer) {
 	app := router.Group("m_classes", middleware.JWTMiddleware())
 	app.Get("/", controllers.GetMClasses(c))
 	app.Post("/", controllers.CreateMClasses(c))
