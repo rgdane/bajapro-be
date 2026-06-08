@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
@@ -12,24 +11,25 @@ const TableNameUser = "users"
 
 // User mapped from table <users>
 type User struct {
-	ID                int64          `gorm:"primaryKey;autoIncrement:false;type:bigint;default:nextval('users_seq'::regclass)" json:"id"`
-	TitleID           *int64         `gorm:"column:title_id;index:idx_users_title_id" json:"title_id"`
+	ID     			  int64 		 `gorm:"primaryKey;autoIncrement:false;type:bigint;default:nextval('users_seq'::regclass)" json:"id"`
+	RoleID 			  int64 		 `gorm:"column:role_id" json:"role_id"`
+	ClassID           *int64         `gorm:"column:class_id" json:"class_id"`
 	Code              *string        `gorm:"column:code;size:50;unique;index:idx_users_code" json:"code"`
 	Name              string         `gorm:"column:name;size:255;not null;index:idx_users_name" json:"name"`
 	Email             string         `gorm:"column:email;size:255;not null;unique;index:idx_users_email" json:"email"`
-	EmailVerifiedAt   *time.Time     `gorm:"column:email_verified_at" json:"email_verified_at"`
 	Password          string         `gorm:"column:password;not null" json:"password"`
-	RememberToken     *string        `gorm:"column:remember_token;size:100" json:"remember_token"`
-	CustomFields      datatypes.JSON `gorm:"column:custom_fields;type:jsonb" json:"custom_fields"`
 	AvatarUrl         *string        `gorm:"column:avatar_url;size:255" json:"avatar_url"`
 	IsPasswordDefault bool           `gorm:"column:is_password_default;default:true;" json:"is_password_default"`
+	IsApprovedByAdmin   bool           `gorm:"column:is_approved_by_admin;default:false;" json:"is_approved_by_admin"`
+	IsActive          bool           `gorm:"column:isactive;default:true" json:"isactive"`
 	CreatedAt         time.Time      `gorm:"column:created_at;autoCreateTime" json:"created_at"`
 	UpdatedAt         time.Time      `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
 	DeletedAt         gorm.DeletedAt `gorm:"index:idx_users_deleted_at" json:"deleted_at"`
 
 	// Relations
-	HasTitle        Title         `gorm:"foreignKey:TitleID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"title"`
-	HasRoles        []Role        `gorm:"many2many:user_has_roles;constraint:OnDelete:CASCADE;" json:"has_roles"`
+	HasRoles []Role `gorm:"many2many:user_has_roles;constraint:OnDelete:CASCADE;" json:"has_roles"`
+	HasClass *MClass `gorm:"foreignKey:ClassID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"class"`
+	TeachingClasses []MClass `gorm:"many2many:m_class_teachers;" json:"teaching_classes"`
 }
 
 func (*User) TableName() string {

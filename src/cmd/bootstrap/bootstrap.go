@@ -1,14 +1,23 @@
 package bootstrap
 
 import (
-	"jk-api/internal/container"
-)
-
-var (
-	Services *container.AppContainer
+	"jk-api/internal/config"
+	"jk-api/internal/database/migrations"
+	"jk-api/internal/database/seeders"
 )
 
 func Setup() {
-	InitEnv()
-	Services = InitContainer()
+	LoadConfig()
+
+	InitLogger()
+	InitPostgres()
+	// InitNeo4j()
+
+	runMigrate()
+	InitFiber()
+}
+
+func runMigrate() {
+	migrations.Migrate()
+	seeders.InitSeeder(config.DB)
 }

@@ -13,7 +13,6 @@ type CreateUserDto struct {
 	Name              string  `json:"name"`
 	Email             string  `json:"email"`
 	Password          string  `json:"password"`
-	TitleID           *int64  `json:"title_id"`
 	IsPasswordDefault *bool   `json:"is_password_default"`
 }
 
@@ -25,7 +24,7 @@ type UpdateUserDto struct {
 	Password          *string    `json:"password"`
 	OldPawword        *string    `json:"old_password"`
 	NewPassword       *string    `json:"new_password"`
-	TitleID           *int64     `json:"title_id"`
+	ClassID           *int64     `json:"class_id"`
 	RoleIDs           *[]int64   `json:"has_roles"`
 	IsPasswordDefault *bool      `json:"is_password_default"`
 	DeletedAt         *time.Time `json:"deleted_at"`

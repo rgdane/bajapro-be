@@ -120,7 +120,7 @@ func BulkCreateUsers(cn *container.AppContainer) fiber.Handler {
 		if len(input.Data) == 0 {
 			return presenters.ErrorResponseWithMessage(c, fiber.StatusBadRequest, "No data provided")
 		}
-
+		
 		createdUsers, err := cn.UserHandler.BulkCreateHandler(&input)
 		if err != nil {
 			return presenters.ErrorResponse(c, fiber.StatusInternalServerError, err)

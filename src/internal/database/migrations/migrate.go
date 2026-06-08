@@ -19,12 +19,23 @@ func Migrate() {
 
 	err := db.AutoMigrate(
 		&models.User{},
-		&models.Department{},
-		&models.Division{},
-		&models.Level{},
-		&models.Position{},
-		&models.Title{},
+		&models.MLevel{},
 		&models.Role{},
+		&models.MClass{},
+		&models.MLesson{},
+		&models.MSubLesson{},
+		&models.MBadgeSettings{},
+		&models.MCourse{},
+		&models.MMaterials{},
+		&models.TStudentCourse{},
+		&models.TStudentProgress{},
+		&models.TWonderingScore{},
+		&models.TCodeQuestion{},
+		&models.TCodeAnswer{},
+		&models.TCodeHistoryLogs{},
+		&models.TEssayQuestion{},
+		&models.TEssayAnswer{},
+		&models.TGenerationHistory{},
 		&models.Permission{},
 	)
 

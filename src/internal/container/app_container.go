@@ -6,24 +6,30 @@ import (
 
 type AppContainer struct {
 	AuthHandler       *handlers.AuthHandler
-	LevelHandler      *handlers.LevelHandler
+	MLevelHandler      *handlers.MLevelHandler
 	PermissionHandler *handlers.PermissionHandler
-	PositionHandler   *handlers.PositionHandler
 	RoleHandler       *handlers.RoleHandler
-	TitleHandler      *handlers.TitleHandler
 	UserHandler       *handlers.UserHandler
-	DivisionHandler   *handlers.DivisionHandler
+	MClassHandler     *handlers.MClassHandler
+	MBadgeSettingsHandler *handlers.MBadgeSettingsHandler
+	MCourseHandler    *handlers.MCourseHandler
+	MLessonHandler    *handlers.MLessonHandler
+	MSubLessonHandler *handlers.MSubLessonHandler
+	MMaterialHandler  *handlers.MMaterialHandler
 }
 
 func NewAppContainer() *AppContainer {
 	return &AppContainer{
 		AuthHandler:       InitAuthContainer(),
-		LevelHandler:      InitLevelContainer(),
+		MLevelHandler:      InitMLevelContainer(),
 		PermissionHandler: InitPermissionContainer(),
-		PositionHandler:   InitPositionContainer(),
 		RoleHandler:       InitRoleContainer(),
-		TitleHandler:      InitTitleContainer(),
 		UserHandler:       InitUserContainer(),
-		DivisionHandler:   InitDivisionContainer(),
+		MClassHandler:     InitMClassContainer(),
+		MBadgeSettingsHandler: InitMBadgeSettingsContainer(),
+		MCourseHandler:    InitMCourseContainer(),
+		MLessonHandler:    InitMLessonContainer(),
+		MSubLessonHandler: InitMSubLessonContainer(),
+		MMaterialHandler:  InitMMaterialContainer(),
 	}
 }

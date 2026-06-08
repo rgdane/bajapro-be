@@ -2,8 +2,7 @@ package config
 
 import (
 	"context"
-	"log"
-	"os"
+	"fmt"
 	"time"
 
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
@@ -12,10 +11,10 @@ import (
 
 var Neo4jDriver neo4j.DriverWithContext
 
-func InitNeo4j() {
-	uri := os.Getenv("NEO4J_URI")       // example: neo4j://localhost:7687
-	user := os.Getenv("NEO4J_USER")     // neo4j
-	pass := os.Getenv("NEO4J_PASSWORD") // password
+func Neo4jApp() error {
+	uri := AppConfig.Neo4jURI       // example: neo4j://localhost:7687
+	user := AppConfig.Neo4jUser     // neo4j
+	pass := AppConfig.Neo4jPassword // password
 	timeout := 5 * time.Second
 
 	driver, err := neo4j.NewDriverWithContext(
@@ -28,15 +27,15 @@ func InitNeo4j() {
 	)
 
 	if err != nil {
-		log.Fatalf("❌ Failed to create Neo4j driver: %v", err)
+		return fmt.Errorf("failed to create Neo4j driver: %w", err)
 	}
 
 	if err := driver.VerifyConnectivity(context.Background()); err != nil {
-		log.Fatalf("❌ Failed to connect to Neo4j: %v", err)
+		return fmt.Errorf("failed to connect to Neo4j: %w", err)
 	}
 
-	log.Println("✅ Connected to Neo4j:", uri)
 	Neo4jDriver = driver
+	return nil
 }
 
 func GetNeo4j() neo4j.DriverWithContext {
@@ -46,6 +45,6 @@ func GetNeo4j() neo4j.DriverWithContext {
 func CloseNeo4j() {
 	if Neo4jDriver != nil {
 		Neo4jDriver.Close(context.Background())
-		log.Println("🔌 Neo4j connection closed")
+		Logger.Info("🔌 Neo4j connection closed")
 	}
 }
