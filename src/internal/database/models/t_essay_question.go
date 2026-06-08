@@ -11,11 +11,8 @@ type TEssayQuestion struct {
 	Answer2        string     `gorm:"column:answer_2;type:text" json:"answer_2"`
 	Answer3        string     `gorm:"column:answer_3;type:text" json:"answer_3"`
 	Answer4        string     `gorm:"column:answer_4;type:text" json:"answer_4"`
-	IsActive       bool       `gorm:"column:isactive;default:true" json:"isactive"`
 	CreatedAt      time.Time  `gorm:"column:created_at;autoCreateTime" json:"created_at"`
 	UpdatedAt      *time.Time `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
-	UserCreate     int64      `gorm:"column:user_create" json:"user_create"`
-	UserUpdate     int64      `gorm:"column:user_update" json:"user_update"`
 
 	// Foreign Key Relationships
 	CodeQuestion *TCodeQuestion `gorm:"foreignKey:CodeQuestionID;references:ID" json:"code_question"`

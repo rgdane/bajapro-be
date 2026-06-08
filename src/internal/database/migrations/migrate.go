@@ -18,6 +18,7 @@ func Migrate() {
 	// }
 
 	err := db.AutoMigrate(
+		&models.RefreshToken{},
 		&models.User{},
 		&models.MLevel{},
 		&models.Role{},
@@ -27,13 +28,13 @@ func Migrate() {
 		&models.MBadgeSettings{},
 		&models.MCourse{},
 		&models.MMaterials{},
-		// &models.TStudentCourse{},
-		// &models.TStudentProgress{},
+		&models.TStudentCourse{},
+		&models.TStudentProgress{},
 		// &models.TWonderingScore{},
-		// &models.TCodeQuestion{},
-		// &models.TCodeAnswer{},
-		// &models.TCodeHistoryLogs{},
-		// &models.TEssayQuestion{},
+		&models.TCodeQuestion{},
+		&models.TCodeAnswer{},
+		&models.TCodeHistoryLogs{},
+		&models.TEssayQuestion{},
 		// &models.TEssayAnswer{},
 		// &models.TGenerationHistory{},
 		&models.Permission{},

@@ -13,6 +13,8 @@ type MBadgeSettings struct {
 	UpdatedAt  time.Time  `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
 
 	
+
+	
 }
 
 func (*MBadgeSettings) TableName() string {

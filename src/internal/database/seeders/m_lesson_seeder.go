@@ -7,6 +7,13 @@ import (
 )
 
 func SeedLessons(db *gorm.DB) error {
+	var count int64
+	db.Model(&models.MLesson{}).Count(&count)
+
+	if count > 0 {
+		return nil // biar tidak duplicate
+	}
+	
 	lessons := []models.MLesson{
 		{
 			CourseID:     1,

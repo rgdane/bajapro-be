@@ -7,6 +7,13 @@ import (
 )
 
 func SeedMaterials(db *gorm.DB) error {
+	var count int64
+	db.Model(&models.MMaterials{}).Count(&count)
+
+	if count > 0 {
+		return nil // biar tidak duplicate
+	}
+
 	materials := []models.MMaterials{
 		{
 			SubLessonID:     1,
