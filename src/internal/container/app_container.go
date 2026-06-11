@@ -20,6 +20,7 @@ type AppContainer struct {
 	TStudentProgressHandler *handlers.TStudentProgressHandler
 	TCodeQuestionHandler *handlers.TCodeQuestionHandler
 	EssayQuestionHandler *handlers.EssayQuestionHandler
+	TCodeAnswerHandler *handlers.TCodeAnswerHandler
 }
 
 func NewAppContainer() *AppContainer {
@@ -39,5 +40,6 @@ func NewAppContainer() *AppContainer {
 		TStudentProgressHandler: InitTStudentProgressContainer(),
 		TCodeQuestionHandler: InitTCodeQuestionContainer(),
 		EssayQuestionHandler: InitEssayQuestionContainer(),
+		TCodeAnswerHandler: InitTCodeAnswerContainer(),
 	}
 }
