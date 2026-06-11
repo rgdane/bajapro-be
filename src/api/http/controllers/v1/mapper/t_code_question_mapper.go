@@ -7,8 +7,8 @@ import (
 	"jk-api/internal/database/models"
 )
 
-func CreateTCodeQuestionDtoToModel(dto *dto.TCodeQuestionCreateDto) (*models.TCodeQuestion, error) {
-	data := &models.TCodeQuestion{
+func CreateTCodeQuestionDtoToModel(dto *dto.TCodeQuestionCreateDto) (*models.CodeQuestion, error) {
+	data := &models.CodeQuestion{
 		SubLessonID:  dto.SubLessonID,
 		CodeQuestion: dto.CodeQuestion,
 		Image:          dto.Image,
@@ -19,13 +19,13 @@ func CreateTCodeQuestionDtoToModel(dto *dto.TCodeQuestionCreateDto) (*models.TCo
 	return data, nil
 }
 
-func TCodeQuestionModelToResponseDto(data *models.TCodeQuestion) (*dto.TCodeQuestionResponseDto, error) {
+func TCodeQuestionModelToResponseDto(data *models.CodeQuestion) (*dto.TCodeQuestionResponseDto, error) {
 	if data == nil {
 		return nil, nil
 	}
 
 	responseDto := &dto.TCodeQuestionResponseDto{
-		TCodeQuestion: *data,
+		CodeQuestion: *data,
 	}
 
 	return responseDto, nil

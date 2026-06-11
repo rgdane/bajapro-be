@@ -22,6 +22,11 @@ func SetupSequenceTable(db *gorm.DB) error {
 		"t_student_course_seq": "t_student_course",
 		"t_student_progress_seq": "t_student_progress",
 		"t_code_question_seq": "t_code_question",
+		"t_essay_question_seq": "t_essay_question",
+		"t_essay_answer_seq": "t_essay_answer",
+		"t_code_answer_seq": "t_code_answer",
+		"t_code_history_logs_seq": "t_code_history_logs",
+
 	}
 
 	for seqName, tableName := range sequences {

@@ -2,8 +2,8 @@ package models
 
 import "time"
 
-type TCodeQuestion struct {
-	ID           int64      `gorm:"primaryKey;autoIncrement:true;type:serial" json:"id"`
+type CodeQuestion struct {
+	ID           int64      `gorm:"primaryKey;autoIncrement:true" json:"id"`
 	SubLessonID  int64      `gorm:"column:sub_lesson_id" json:"sub_lesson_id"`
 	CodeQuestion string     `gorm:"column:code_question;type:text" json:"code_question"`
 	Image        string     `gorm:"type:text" json:"image"`
@@ -15,10 +15,10 @@ type TCodeQuestion struct {
 	// Foreign Key Relationships
 	SubLesson *MSubLesson `gorm:"foreignKey:SubLessonID;references:ID" json:"sub_lesson"`
 	CodeAnswers []TCodeAnswer `gorm:"foreignKey:CodeQuestionID;references:ID" json:"code_answers"`
-	EssayQuestions []TEssayQuestion `gorm:"foreignKey:CodeQuestionID;references:ID" json:"essay_questions"`
+	EssayQuestions []EssayQuestion `gorm:"foreignKey:CodeQuestionID;references:ID" json:"essay_questions"`
 	CodeHistoryLogs []TCodeHistoryLogs `gorm:"foreignKey:CodeQuestionID;references:ID" json:"code_history_logs"`
 }
 
-func (*TCodeQuestion) TableName() string {
+func (*CodeQuestion) TableName() string {
 	return "t_code_question"
 }

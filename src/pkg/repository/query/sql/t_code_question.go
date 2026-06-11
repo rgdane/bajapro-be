@@ -90,8 +90,8 @@ func (repo *tCodeQuestionRepository) WithCursor(cursor int) adapter.TCodeQuestio
 
 // --- 🔧 Query Builder Helper ---
 
-func (repo *tCodeQuestionRepository) getQueryBuilder() *builder.QueryBuilder[models.TCodeQuestion] {
-	qb := builder.NewQueryBuilder[models.TCodeQuestion](repo.db).
+func (repo *tCodeQuestionRepository) getQueryBuilder() *builder.QueryBuilder[models.CodeQuestion] {
+	qb := builder.NewQueryBuilder[models.CodeQuestion](repo.db).
 		WithPreloads(repo.preloads...).
 		WithAssociations(repo.associations...).
 		WithReplacements(repo.replacements).
@@ -112,14 +112,14 @@ func (repo *tCodeQuestionRepository) getQueryBuilder() *builder.QueryBuilder[mod
 
 // --- 🔧 CRUD Methods ---
 
-func (repo *tCodeQuestionRepository) CreateTCodeQuestion(data *models.TCodeQuestion) (*models.TCodeQuestion, error) {
+func (repo *tCodeQuestionRepository) CreateTCodeQuestion(data *models.CodeQuestion) (*models.CodeQuestion, error) {
 	if err := repo.getQueryBuilder().Create(data); err != nil {
 		return nil, err
 	}
 	return data, nil
 }
 
-func (repo *tCodeQuestionRepository) FindTCodeQuestionByID(id int64) (*models.TCodeQuestion, error) {
+func (repo *tCodeQuestionRepository) FindTCodeQuestionByID(id int64) (*models.CodeQuestion, error) {
 	return repo.getQueryBuilder().
 		WithWhere(func(db *gorm.DB) *gorm.DB {
 			return db.Where("id = ?", id)
@@ -128,7 +128,7 @@ func (repo *tCodeQuestionRepository) FindTCodeQuestionByID(id int64) (*models.TC
 		FindOne()
 }
 
-func (repo *tCodeQuestionRepository) FindTCodeQuestionsBySubLessonID(subLessonID int64) ([]models.TCodeQuestion, error) {
+func (repo *tCodeQuestionRepository) FindTCodeQuestionsBySubLessonID(subLessonID int64) ([]models.CodeQuestion, error) {
 	return repo.getQueryBuilder().
 		WithWhere(func(db *gorm.DB) *gorm.DB {
 			return db.Where("sub_lesson_id = ?", subLessonID)

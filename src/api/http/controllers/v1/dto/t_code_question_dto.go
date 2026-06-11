@@ -16,7 +16,7 @@ type TCodeQuestionCreateDto struct {
 
 // TCodeQuestionResponseDto represents a detailed view of TCodeQuestion with related data.
 type TCodeQuestionResponseDto struct {
-	models.TCodeQuestion
+	models.CodeQuestion
 }
 
 type TCodeQuestionFilterDto struct {

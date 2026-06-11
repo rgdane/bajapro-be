@@ -11,7 +11,7 @@ import (
 )
 
 func TCodeQuestionRoute(router fiber.Router, c *container.AppContainer) {
-	app := router.Group("t_code_questions", middleware.JWTMiddleware())
+	app := router.Group("code_questions", middleware.JWTMiddleware())
 	app.Get("/sub_lesson/:subLessonID", controllers.GetTcodeQuestionsBySubLessonID(c))
 	app.Get("/:id", controllers.GetTCodeQuestionByID(c))
 	app.Post("/", controllers.CreateTCodeQuestions(c))

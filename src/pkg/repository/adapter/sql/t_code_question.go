@@ -17,7 +17,7 @@ type TCodeQuestionRepository interface {
 	WithLimit(limit int) TCodeQuestionRepository
 	WithCursor(cursor int) TCodeQuestionRepository
 
-	FindTCodeQuestionByID(id int64) (*models.TCodeQuestion, error)
-	FindTCodeQuestionsBySubLessonID(subLessonID int64) ([]models.TCodeQuestion, error)
-	CreateTCodeQuestion(data *models.TCodeQuestion) (*models.TCodeQuestion, error)
+	FindTCodeQuestionByID(id int64) (*models.CodeQuestion, error)
+	FindTCodeQuestionsBySubLessonID(subLessonID int64) ([]models.CodeQuestion, error)
+	CreateTCodeQuestion(data *models.CodeQuestion) (*models.CodeQuestion, error)
 }

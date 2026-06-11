@@ -11,9 +11,9 @@ import (
 
 type TCodeQuestionService interface {
 	WithTx(tx *gorm.DB) TCodeQuestionService
-	GetCodeQuestionsBySubLessonID(subLessonID int64) ([]models.TCodeQuestion, error)
-	GetCodeQuestionByID(id int64) (*models.TCodeQuestion, error)
-	CreateCodeQuestion(data *models.TCodeQuestion) (*models.TCodeQuestion, error)
+	GetCodeQuestionsBySubLessonID(subLessonID int64) ([]models.CodeQuestion, error)
+	GetCodeQuestionByID(id int64) (*models.CodeQuestion, error)
+	CreateCodeQuestion(data *models.CodeQuestion) (*models.CodeQuestion, error)
 	GetDB() *gorm.DB
 }
 
@@ -40,7 +40,7 @@ func (s *tCodeQuestionService) GetDB() *gorm.DB {
 	return config.DB
 }
 
-func (s *tCodeQuestionService) GetCodeQuestionsBySubLessonID(subLessonID int64) ([]models.TCodeQuestion, error) {
+func (s *tCodeQuestionService) GetCodeQuestionsBySubLessonID(subLessonID int64) ([]models.CodeQuestion, error) {
 	data, err := s.repo.FindTCodeQuestionsBySubLessonID(subLessonID)
 	if err != nil {
 		return nil, gorm_err.TranslateGormError(err)
@@ -48,7 +48,7 @@ func (s *tCodeQuestionService) GetCodeQuestionsBySubLessonID(subLessonID int64) 
 	return data, nil
 }
 
-func (s *tCodeQuestionService) CreateCodeQuestion(data *models.TCodeQuestion) (*models.TCodeQuestion, error) {
+func (s *tCodeQuestionService) CreateCodeQuestion(data *models.CodeQuestion) (*models.CodeQuestion, error) {
 	data, err := s.repo.CreateTCodeQuestion(data)
 	if err != nil {
 		return nil, gorm_err.TranslateGormError(err)
@@ -56,7 +56,7 @@ func (s *tCodeQuestionService) CreateCodeQuestion(data *models.TCodeQuestion) (*
 	return data, nil
 }
 
-func (s *tCodeQuestionService) GetCodeQuestionByID(id int64) (*models.TCodeQuestion, error) {
+func (s *tCodeQuestionService) GetCodeQuestionByID(id int64) (*models.CodeQuestion, error) {
 	data, err := s.repo.FindTCodeQuestionByID(id)
 	if err != nil {
 		return nil, gorm_err.TranslateGormError(err)
