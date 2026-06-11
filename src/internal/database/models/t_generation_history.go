@@ -3,7 +3,7 @@ package models
 import "time"
 
 type TGenerationHistory struct {
-	ID             int64      `gorm:"primaryKey;autoIncrement:true;type:serial" json:"id"`
+	ID             int64      `gorm:"primaryKey;autoIncrement:true" json:"id"`
 	SubLessonID    int64      `gorm:"column:sub_lesson_id" json:"sub_lesson_id"`
 	TopicUsed      string     `gorm:"column:topic_used;type:text" json:"topic_used"`
 	Result         string     `gorm:"type:text" json:"result"`

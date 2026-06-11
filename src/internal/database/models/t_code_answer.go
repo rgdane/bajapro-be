@@ -3,7 +3,7 @@ package models
 import "time"
 
 type TCodeAnswer struct {
-	ID             int64      `gorm:"primaryKey;autoIncrement:true;type:serial" json:"id"`
+	ID             int64      `gorm:"primaryKey;autoIncrement:true" json:"id"`
 	UserID         int64      `gorm:"column:user_id" json:"user_id"`
 	CodeQuestionID int64      `gorm:"column:code_question_id" json:"code_question_id"`
 	IsCodeRight    bool       `gorm:"column:is_code_right" json:"is_code_right"`
@@ -13,7 +13,7 @@ type TCodeAnswer struct {
 
 	// Foreign Key Relationships
 	User         *User         `gorm:"foreignKey:UserID;references:ID" json:"user"`
-	CodeQuestion *TCodeQuestion `gorm:"foreignKey:CodeQuestionID;references:ID" json:"code_question"`
+	CodeQuestion *CodeQuestion `gorm:"foreignKey:CodeQuestionID;references:ID" json:"code_question"`
 }
 
 func (*TCodeAnswer) TableName() string {
