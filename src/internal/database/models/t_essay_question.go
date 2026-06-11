@@ -2,8 +2,8 @@ package models
 
 import "time"
 
-type TEssayQuestion struct {
-	ID             int64      `gorm:"primaryKey;autoIncrement:true;type:serial" json:"id"`
+type EssayQuestion struct {
+	ID             int64      `gorm:"primaryKey;autoIncrement:true" json:"id"`
 	CodeQuestionID int64      `gorm:"column:code_question_id" json:"code_question_id"`
 	EssayQuestion  string     `gorm:"column:essay_question;type:text" json:"essay_question"`
 	Answer         string     `gorm:"type:text" json:"answer"`
@@ -15,9 +15,9 @@ type TEssayQuestion struct {
 	UpdatedAt      *time.Time `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
 
 	// Foreign Key Relationships
-	CodeQuestion *TCodeQuestion `gorm:"foreignKey:CodeQuestionID;references:ID" json:"code_question"`
+	CodeQuestion *CodeQuestion `gorm:"foreignKey:CodeQuestionID;references:ID" json:"code_question"`
 }
 
-func (*TEssayQuestion) TableName() string {
+func (*EssayQuestion) TableName() string {
 	return "t_essay_question"
 }

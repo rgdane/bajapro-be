@@ -23,4 +23,5 @@ func Setup(app *fiber.App, c *container.AppContainer) {
 	MLessonRoutes(api, c)
 	MSubLessonRoutes(api, c)
 	MMaterialRoutes(api, c)
+	EssayQuestionRoute(api, c)
 }
