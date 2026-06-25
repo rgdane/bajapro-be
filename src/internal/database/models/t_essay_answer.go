@@ -7,7 +7,7 @@ type TEssayAnswer struct {
 	UserID              int64      `gorm:"column:user_id" json:"user_id"`
 	EssayQuestionID     int64      `gorm:"column:essay_question_id" json:"essay_question_id"`
 	Answer              string     `gorm:"type:text" json:"answer"`
-	KonteksPenjelasan   string     `gorm:"column:konteks_penjelasan;type:text" json:"konteks_penjelasan"`
+	KonteksPenjelasan   int        `gorm:"column:konteks_penjelasan" json:"konteks_penjelasan"`
 	Keruntutan          int        `gorm:"column:keruntutan" json:"keruntutan"`
 	Kebenaran           int        `gorm:"column:kebenaran" json:"kebenaran"`
 	TeacherNotes        string     `gorm:"column:teacher_notes;type:text" json:"teacher_notes"`
