@@ -13,7 +13,7 @@ func Setup() {
 	InitPostgres()
 	// InitNeo4j()
 
-	runMigrate()
+	//runMigrate()
 	InitFiber()
 }
 
