@@ -30,7 +30,7 @@ func Migrate() {
 		&models.MMaterials{},
 		&models.TStudentCourse{},
 		&models.TStudentProgress{},
-		// &models.TWonderingScore{},
+		&models.TWonderingScore{},
 		&models.CodeQuestion{},
 		&models.TCodeAnswer{},
 		&models.TCodeHistoryLogs{},

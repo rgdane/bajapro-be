@@ -25,4 +25,6 @@ func Setup(app *fiber.App, c *container.AppContainer) {
 	MMaterialRoutes(api, c)
 	EssayQuestionRoute(api, c)
 	TCodeAnswerRoute(api, c)
+	TWonderingScoreRoute(api, c)
+	TEssayAnswerRoute(api, c)
 }
