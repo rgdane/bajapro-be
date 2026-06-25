@@ -12,7 +12,6 @@ func CreateEssayQuestionDtoToModel(dto *dto.EssayQuestionCreateDto) (*models.Ess
 		CodeQuestionID: dto.CodeQuestionId,
 		EssayQuestion:  dto.EssayQuestion,
 		Answer:         dto.Answer,
-		Answer1:        dto.Answer1,
 		Answer2:        dto.Answer2,
 		Answer3:        dto.Answer3,
 		Answer4:        dto.Answer4,

@@ -8,12 +8,11 @@ import (
 
 type EssayQuestionCreateDto struct {
 	CodeQuestionId int64  `json:"code_question_id" validate:"required"`
-	EssayQuestion string `json:"essay_question" validate:"required"`
-	Answer		string `json:"answer" validate:"required"`
-	Answer1	string `json:"answer_1"`
-	Answer2	string `json:"answer_2"`
-	Answer3	string `json:"answer_3"`
-	Answer4	string `json:"answer_4"`
+	EssayQuestion  string `json:"essay_question" validate:"required"`
+	Answer         string `json:"answer"`
+	Answer2        string `json:"answer_2"`
+	Answer3        string `json:"answer_3"`
+	Answer4        string `json:"answer_4"`
 }
 
 // EssayQuestionResponseDto represents a detailed view of EssayQuestion with related data.

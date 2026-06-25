@@ -6,8 +6,7 @@ type EssayQuestion struct {
 	ID             int64      `gorm:"primaryKey;autoIncrement:true" json:"id"`
 	CodeQuestionID int64      `gorm:"column:code_question_id" json:"code_question_id"`
 	EssayQuestion  string     `gorm:"column:essay_question;type:text" json:"essay_question"`
-	Answer         string     `gorm:"type:text" json:"answer"`
-	Answer1        string     `gorm:"column:answer_1;type:text" json:"answer_1"`
+	Answer         string     `gorm:"column:answer;type:text" json:"answer"`
 	Answer2        string     `gorm:"column:answer_2;type:text" json:"answer_2"`
 	Answer3        string     `gorm:"column:answer_3;type:text" json:"answer_3"`
 	Answer4        string     `gorm:"column:answer_4;type:text" json:"answer_4"`
