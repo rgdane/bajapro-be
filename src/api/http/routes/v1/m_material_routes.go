@@ -21,4 +21,6 @@ func MMaterialRoutes(router fiber.Router, c *container.AppContainer) {
 	app.Post("/", controllers.CreateMMaterials(c))
 	app.Put("/:id", controllers.UpdateMMaterials(c))
 	app.Delete("/:id", controllers.DeleteMMaterials(c))
+
+	app.Get("/:id/read", controllers.CreateTWonderingScore(c))
 }

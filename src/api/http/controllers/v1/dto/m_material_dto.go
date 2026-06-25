@@ -6,6 +6,9 @@ import (
 	"jk-api/internal/database/models"
 )
 
+type ReadMMaterialDto struct {
+	SubLessonID int64 `json:"sub_lesson_id" validate:"required"`
+}
 // CreateMMaterial is used when creating a new MMaterial.
 type CreateMMaterialDto struct {
 	SubLessonID int64  `json:"sub_lesson_id" binding:"required"`
