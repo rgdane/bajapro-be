@@ -94,6 +94,10 @@ func (s *mMaterialService) GetAllMMaterials(filter dto.MMaterialFilterDto) ([]mo
 		repo = repo.WithPreloads("SubLesson")
 	}
 
+	if filter.Name != "" {
+		repo = repo.WithWhere("title ILIKE ?", "%"+filter.Name+"%")
+	}
+
 	if filter.Sort != "" && filter.Order != "" {
 		orderClause := filter.Sort + " " + filter.Order
 		repo = repo.WithOrder(orderClause)

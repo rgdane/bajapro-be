@@ -30,8 +30,12 @@ func JWTMiddleware() fiber.Handler {
 		}
 
 		claims := token.Claims.(jwt.MapClaims)
-		c.Locals("user_id", claims["user_id"])
+		userIDFloat := claims["user_id"].(float64)
+		userID := int64(userIDFloat)
+		c.Locals("user_id", userID)
 		c.Locals("name", claims["name"])
+		c.Locals("roles", toStringSlice(claims["roles"]))
+		c.Locals("permissions", toStringSlice(claims["permissions"]))
 		return c.Next()
 	}
 }

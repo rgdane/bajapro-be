@@ -214,6 +214,16 @@ func (qb *QueryBuilder[T]) Delete(id any) error {
 	return nil
 }
 
+func (qb *QueryBuilder[T]) DeleteWhere() error {
+	db := qb.applyWhere(qb.db)
+
+	if qb.unscoped {
+		db = db.Unscoped()
+	}
+
+	return db.Delete(new(T)).Error
+}
+
 func (qb *QueryBuilder[T]) Count() (int64, error) {
 	var count int64
 	tx := qb.buildQuery()

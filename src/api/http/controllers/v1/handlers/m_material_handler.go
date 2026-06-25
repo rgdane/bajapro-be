@@ -98,7 +98,7 @@ func (h *MMaterialHandler) GetAllMMaterialsHandler(filter dto.MMaterialFilterDto
 	var total int64
 	db := h.Service.GetDB()
 	if filter.Name != "" {
-		db = db.Where("name ILIKE ?", "%"+filter.Name+"%")
+		db = db.Where("title ILIKE ?", "%"+filter.Name+"%")
 	}
 	if filter.ShowDeleted {
 		db = db.Unscoped().Where("deleted_at IS NOT NULL")

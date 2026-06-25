@@ -7,6 +7,12 @@ import (
 )
 
 func SeedSubLessons(db *gorm.DB) error {
+	var count int64
+	db.Model(&models.MSubLesson{}).Count(&count)
+
+	if count > 0 {
+		return nil // biar tidak duplicate
+	}
 	subLessons := []models.MSubLesson{
 		{
 			LessonID:      1,

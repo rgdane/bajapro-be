@@ -15,6 +15,7 @@ type MSubLesson struct {
 	// Foreign Key Relationships
 	Lesson *MLesson `gorm:"foreignKey:LessonID;references:ID" json:"lesson"`
 	Materials []MMaterials `gorm:"foreignKey:SubLessonID;references:ID" json:"materials"`
+	CodeQuestions []CodeQuestion `gorm:"foreignKey:SubLessonID;references:ID" json:"code_questions"`
 }
 
 func (*MSubLesson) TableName() string {

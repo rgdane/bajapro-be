@@ -9,19 +9,33 @@ import (
 )
 
 func SeedRoles(db *gorm.DB) error {
-	var superRole models.Role
-	err := db.Where("name = ?", "super").First(&superRole).Error
+	roleNames := []string{"super", "teacher", "student"}
 
-	if err == gorm.ErrRecordNotFound {
-		superRole = models.Role{
-			Name:      "super",
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
-		}
-		if err := db.Create(&superRole).Error; err != nil {
+	var roles []models.Role
+
+	for _, name := range roleNames {
+		var role models.Role
+
+		err := db.Where("name = ?", name).First(&role).Error
+		if err == gorm.ErrRecordNotFound {
+			role = models.Role{
+				Name:      name,
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+			}
+			if err := db.Create(&role).Error; err != nil {
+				return err
+			}
+		} else if err != nil {
 			return err
 		}
-	} else if err != nil {
+
+		roles = append(roles, role)
+	}
+
+	// 🔥 Assign semua permission ke SUPER saja
+	var superRole models.Role
+	if err := db.Where("name = ?", "super").First(&superRole).Error; err != nil {
 		return err
 	}
 

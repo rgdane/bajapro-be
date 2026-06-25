@@ -16,6 +16,13 @@ type AppContainer struct {
 	MLessonHandler    *handlers.MLessonHandler
 	MSubLessonHandler *handlers.MSubLessonHandler
 	MMaterialHandler  *handlers.MMaterialHandler
+	TStudentCourseHandler *handlers.TStudentCourseHandler
+	TStudentProgressHandler *handlers.TStudentProgressHandler
+	TCodeQuestionHandler *handlers.TCodeQuestionHandler
+	EssayQuestionHandler *handlers.EssayQuestionHandler
+	TCodeAnswerHandler *handlers.TCodeAnswerHandler
+	TWonderingScoreHandler *handlers.TWonderingScoreHandler
+	TEssayAnswerHandler *handlers.TEssayAnswerHandler
 }
 
 func NewAppContainer() *AppContainer {
@@ -31,5 +38,12 @@ func NewAppContainer() *AppContainer {
 		MLessonHandler:    InitMLessonContainer(),
 		MSubLessonHandler: InitMSubLessonContainer(),
 		MMaterialHandler:  InitMMaterialContainer(),
+		TStudentCourseHandler: InitTStudentCourseContainer(),
+		TStudentProgressHandler: InitTStudentProgressContainer(),
+		TCodeQuestionHandler: InitTCodeQuestionContainer(),
+		EssayQuestionHandler: InitEssayQuestionContainer(),
+		TCodeAnswerHandler: InitTCodeAnswerContainer(),
+		TWonderingScoreHandler: InitTWonderingScoreContainer(),
+		TEssayAnswerHandler: InitTEssayAnswerContainer(),
 	}
 }
