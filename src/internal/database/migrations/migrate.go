@@ -36,7 +36,7 @@ func Migrate() {
 		&models.TCodeHistoryLogs{},
 		&models.EssayQuestion{},
 		&models.TEssayAnswer{},
-		// &models.TGenerationHistory{},
+		&models.TGenerationHistory{},
 		&models.Permission{},
 	)
 
