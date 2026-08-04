@@ -3,12 +3,10 @@ FROM golang:1.24-alpine AS builder
 
 WORKDIR /app
 
-ARG ENV=dev
+ARG ENV=production
 
 COPY src/go.mod ./
 COPY src/ ./
-COPY src/internal/creds/gcp_firebase.${ENV}.json internal/creds/gcp_firebase.json
-COPY src/internal/creds/gcp_bucket.${ENV}.json internal/creds/gcp_bucket.json
 
 COPY src/.env.${ENV} .env
 
@@ -22,8 +20,6 @@ WORKDIR /app
 
 COPY --from=builder /app/server .
 COPY --from=builder /app/.env .env
-COPY --from=builder /app/internal/creds/gcp_firebase.json ./internal/creds/gcp_firebase.json
-COPY --from=builder /app/internal/creds/gcp_bucket.json ./internal/creds/gcp_bucket.json
 
 RUN apk --no-cache add ca-certificates
 

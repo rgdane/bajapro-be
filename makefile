@@ -38,7 +38,7 @@ build:
 
 # Rebuild image without cache
 rebuild:
-	docker build --no-cache --build-arg NODE_ENV=dev -t $(IMAGE_NAME) .
+	docker build --no-cache --build-arg NODE_ENV=production -t $(IMAGE_NAME) .
 
 # Show logs
 logs:
