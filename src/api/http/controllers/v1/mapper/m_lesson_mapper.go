@@ -50,7 +50,7 @@ func UpdateMLessonDtoToModel(dto *dto.UpdateMLessonDto) (map[string]interface{},
 		updates["published"] = *dto.Published
 	}
 	if dto.IsActive != nil {
-		updates["is_active"] = *dto.IsActive
+		updates["isactive"] = *dto.IsActive
 	}
 
 

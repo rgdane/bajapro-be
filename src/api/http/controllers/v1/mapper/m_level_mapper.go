@@ -36,7 +36,7 @@ func UpdateMLevelDtoToModel(dto *dto.UpdateMLevelDto) (
 	}
 
 	if dto.IsActive != nil {
-		payload["is_active"] = *dto.IsActive
+		payload["isactive"] = *dto.IsActive
 	}
 
 	return payload, associations, nil

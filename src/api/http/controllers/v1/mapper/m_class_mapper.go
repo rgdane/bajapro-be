@@ -41,7 +41,7 @@ func UpdateMClassDtoToModel(dto *dto.UpdateMClassDto) (
 		payload["class_code"] = *dto.ClassCode
 	}
 	if dto.IsActive != nil {
-		payload["is_active"] = *dto.IsActive
+		payload["isactive"] = *dto.IsActive
 	}
 	
 	if dto.Teachers != nil {

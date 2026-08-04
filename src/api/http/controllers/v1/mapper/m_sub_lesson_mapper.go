@@ -36,7 +36,7 @@ func UpdateMSubLessonDtoToModel(dto *dto.UpdateMSubLessonDto) (map[string]interf
 		updates["order_position"] = *dto.OrderPosition
 	}
 	if dto.IsActive != nil {
-		updates["is_active"] = *dto.IsActive
+		updates["isactive"] = *dto.IsActive
 	}
 
 
