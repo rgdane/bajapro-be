@@ -28,10 +28,10 @@ type RegisterRequest struct {
 }
 
 type ProfileResponse struct {
-	ID        int64          `json:"id"`
-	Name      string         `json:"name"`
-	Email     string         `json:"email"`
-	IsPasswordDefault bool `json:"is_password_default"`
-	HasRoles  []models.Role  `json:"has_roles"`
-	HasClass  *models.MClass `json:"class,omitempty"`
+	ID                int64         `json:"id"`
+	Name              string        `json:"name"`
+	Email             string        `json:"email"`
+	IsPasswordDefault bool          `json:"is_password_default"`
+	HasRoles          []models.Role `json:"has_roles"`
+	HasClass          *models.MClass `json:"class"`
 }

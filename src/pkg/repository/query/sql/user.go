@@ -6,6 +6,7 @@ import (
 	"jk-api/internal/database/models"
 	adapter "jk-api/pkg/repository/adapter/sql"
 	"jk-api/pkg/repository/query/sql/builder"
+	"log"
 
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -214,16 +215,25 @@ func (repo *userRepository) FindUser() ([]models.User, error) {
 }
 
 func (repo *userRepository) FindUserByID(id int64) (*models.User, error) {
-	data, err := repo.getQueryBuilder().FindByID(id)
+	data, err := repo.getQueryBuilder().
+		WithPreloads("HasRoles.HasPermissions", "HasClass").
+		FindByID(id)
+
 	if err != nil {
 		return nil, err
 	}
+
+	log.Printf("USER ID     : %d", data.ID)
+	log.Printf("CLASS ID    : %+v", data.ClassID)
+	log.Printf("HAS CLASS   : %+v", data.HasClass)
+	log.Printf("ROLES COUNT : %d", len(data.HasRoles))
+
 	if !data.IsPasswordDefault {
 		data.Password = ""
 	}
+
 	return data, nil
 }
-
 func (repo *userRepository) FindUserByEmail(email string) (*models.User, error) {
 	return repo.getQueryBuilder().
 		WithWhere(func(db *gorm.DB) *gorm.DB {

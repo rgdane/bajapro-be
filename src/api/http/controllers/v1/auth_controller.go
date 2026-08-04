@@ -21,18 +21,15 @@ func NewAuthController(h *handlers.AuthHandler) *AuthController {
 
 func GetProfile(cn *container.AppContainer) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		authHeader := c.Get("Authorization")
-		if authHeader == "" {
-			return presenters.ErrorResponse(c, fiber.StatusUnauthorized, errors.New("missing authorization header"))
+		token := c.Cookies("access_token")
+
+		if token == "" {
+			return presenters.ErrorResponse(c,
+				fiber.StatusUnauthorized,
+				errors.New("missing access token"))
 		}
 
-		tokenParts := strings.Split(authHeader, " ")
-		if len(tokenParts) != 2 || tokenParts[0] != "Bearer" {
-			return presenters.ErrorResponse(c, fiber.StatusUnauthorized, errors.New("invalid authorization header format"))
-		}
-
-		tokenString := tokenParts[1]
-		data, err := cn.AuthHandler.GetProfileHandler(tokenString)
+		data, err := cn.AuthHandler.GetProfileHandler(token)
 		if err != nil {
 			return presenters.ErrorResponse(c, fiber.StatusInternalServerError, err)
 		}
@@ -43,36 +40,97 @@ func GetProfile(cn *container.AppContainer) fiber.Handler {
 func Login(cn *container.AppContainer) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var input dto.LoginRequest
+
 		if err := c.BodyParser(&input); err != nil {
 			return presenters.ErrorResponseWithMessage(c, fiber.StatusBadRequest, "Invalid request")
 		}
 
-		dto, _, err := cn.AuthHandler.Login(&input)
+		result, _, err := cn.AuthHandler.Login(&input)
 		if err != nil {
 			return presenters.ErrorResponse(c, fiber.StatusInternalServerError, err)
 		}
 
-		return presenters.SuccessResponse(c, dto)
+		// Access Token Cookie
+		c.Cookie(&fiber.Cookie{
+			Name:     "access_token",
+			Value:    result.AccessToken,
+			HTTPOnly: true,
+			Secure:   false, // ubah menjadi true jika sudah HTTPS
+			SameSite: "Lax",
+			Path:     "/",
+			MaxAge:   60 * 60, // 1 jam
+		})
+
+		// Refresh Token Cookie
+		c.Cookie(&fiber.Cookie{
+			Name:     "refresh_token",
+			Value:    result.RefreshToken,
+			HTTPOnly: true,
+			Secure:   false,
+			SameSite: "Lax",
+			Path:     "/",
+			MaxAge:   60 * 60 * 24 * 7, // 7 hari
+		})
+
+		return presenters.SuccessResponse(c, result)
 	}
 }
 
 func Logout(cn *container.AppContainer) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		authHeader := c.Get("Authorization")
-		if authHeader == "" {
-			return presenters.ErrorResponse(c, fiber.StatusUnauthorized, errors.New("missing authorization header"))
+
+		// Prioritas ambil dari cookie
+		tokenString := c.Cookies("access_token")
+
+		// Fallback jika masih memakai Authorization
+		if tokenString == "" {
+			authHeader := c.Get("Authorization")
+
+			if authHeader == "" {
+				return presenters.ErrorResponse(
+					c,
+					fiber.StatusUnauthorized,
+					errors.New("missing access token"),
+				)
+			}
+
+			tokenParts := strings.Split(authHeader, " ")
+			if len(tokenParts) != 2 || tokenParts[0] != "Bearer" {
+				return presenters.ErrorResponse(
+					c,
+					fiber.StatusUnauthorized,
+					errors.New("invalid authorization header"),
+				)
+			}
+
+			tokenString = tokenParts[1]
 		}
 
-		tokenParts := strings.Split(authHeader, " ")
-		if len(tokenParts) != 2 || tokenParts[0] != "Bearer" {
-			return presenters.ErrorResponse(c, fiber.StatusUnauthorized, errors.New("invalid authorization header format"))
-		}
-
-		tokenString := tokenParts[1]
-		err := cn.AuthHandler.Logout(tokenString)
-		if err != nil {
+		// Logout di service
+		if err := cn.AuthHandler.Logout(tokenString); err != nil {
 			return presenters.ErrorResponse(c, fiber.StatusInternalServerError, err)
 		}
+
+		// Hapus cookie access token
+		c.Cookie(&fiber.Cookie{
+			Name:     "access_token",
+			Value:    "",
+			MaxAge:   -1,
+			Path:     "/",
+			HTTPOnly: true,
+			SameSite: "Lax",
+		})
+
+		// Hapus cookie refresh token
+		c.Cookie(&fiber.Cookie{
+			Name:     "refresh_token",
+			Value:    "",
+			MaxAge:   -1,
+			Path:     "/",
+			HTTPOnly: true,
+			SameSite: "Lax",
+		})
+
 		return presenters.SuccessResponse(c, "Logged out successfully")
 	}
 }

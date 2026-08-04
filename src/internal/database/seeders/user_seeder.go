@@ -14,32 +14,57 @@ func SeedUsers(db *gorm.DB) error {
 	if err := db.Where("name = ?", "teacher").First(&teacherRole).Error; err != nil {
 		return err
 	}
+
 	if err := db.Where("name = ?", "student").First(&studentRole).Error; err != nil {
 		return err
 	}
 
-	password, _ := bcrypt.GenerateFromPassword([]byte("123456"), bcrypt.DefaultCost)
+	password, err := bcrypt.GenerateFromPassword(
+		[]byte("123456"),
+		bcrypt.DefaultCost,
+	)
+	if err != nil {
+		return err
+	}
+
+	studentClassID := int64(1)
 
 	users := []struct {
 		Name     string
 		Email    string
 		Role     models.Role
+		ClassID  *int64
 		Approved bool
 	}{
-		{"Teacher 1", "teacher@mail.com", teacherRole, false}, // pending
-		{"Student 1", "student@mail.com", studentRole, true},  // langsung aktif
+		{
+			Name:     "Teacher 1",
+			Email:    "teacher@mail.com",
+			Role:     teacherRole,
+			ClassID:  nil,
+			Approved: false,
+		},
+		{
+			Name:     "Student 1",
+			Email:    "student@mail.com",
+			Role:     studentRole,
+			ClassID:  &studentClassID,
+			Approved: true,
+		},
 	}
 
-	for _, u := range users {
-		var existing models.User
-		err := db.Where("email = ?", u.Email).First(&existing).Error
+	for _, item := range users {
+		var user models.User
 
-		if err == gorm.ErrRecordNotFound {
-			user := models.User{
-				Name:              u.Name,
-				Email:             u.Email,
+		err := db.Where("email = ?", item.Email).First(&user).Error
+
+		switch {
+		case err == gorm.ErrRecordNotFound:
+			user = models.User{
+				Name:              item.Name,
+				Email:             item.Email,
+				ClassID:           item.ClassID,
 				Password:          string(password),
-				IsApprovedByAdmin: u.Approved,
+				IsApprovedByAdmin: item.Approved,
 				IsActive:          true,
 				CreatedAt:         time.Now(),
 				UpdatedAt:         time.Now(),
@@ -49,10 +74,26 @@ func SeedUsers(db *gorm.DB) error {
 				return err
 			}
 
-			if err := db.Model(&user).Association("HasRoles").Append(&u.Role); err != nil {
+		case err != nil:
+			return err
+
+		default:
+			// Pastikan user lama juga mendapatkan class_id terbaru.
+			if err := db.Model(&user).Updates(map[string]any{
+				"name":                   item.Name,
+				"class_id":               item.ClassID,
+				"is_approved_by_admin":   item.Approved,
+				"isactive":               true,
+				"updated_at":             time.Now(),
+			}).Error; err != nil {
 				return err
 			}
-		} else if err != nil {
+		}
+
+		// Replace membuat role tetap konsisten dan tidak duplikat.
+		if err := db.Model(&user).
+			Association("HasRoles").
+			Replace(&item.Role); err != nil {
 			return err
 		}
 	}

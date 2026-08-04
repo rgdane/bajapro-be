@@ -30,6 +30,12 @@ type User struct {
 	HasRoles []Role `gorm:"many2many:user_has_roles;constraint:OnDelete:CASCADE;" json:"has_roles"`
 	HasClass *MClass `gorm:"foreignKey:ClassID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"class"`
 	TeachingClasses []MClass `gorm:"many2many:m_class_teachers;" json:"teaching_classes"`
+	StudentCourses []TStudentCourse `gorm:"foreignKey:UserID;references:ID" json:"student_courses"`
+	StudentProgress []TStudentProgress `gorm:"foreignKey:UserID;references:ID" json:"student_progress"`
+	WonderingScores []TWonderingScore `gorm:"foreignKey:UserID;references:ID" json:"wondering_scores"`
+	CodeAnswers []TCodeAnswer `gorm:"foreignKey:UserID;references:ID" json:"code_answers"`
+	EssayAnswers []TEssayAnswer `gorm:"foreignKey:UserID;references:ID" json:"essay_answers"`
+	CodeHistoryLogs []TCodeHistoryLogs `gorm:"foreignKey:UserID;references:ID" json:"code_history_logs"`
 }
 
 func (*User) TableName() string {

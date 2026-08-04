@@ -11,7 +11,10 @@ import (
 func AuthRoutes(router fiber.Router, c *container.AppContainer) {
 	app := router.Group("auth")
 
-	app.Get("/profile", controllers.GetProfile(c), middleware.JWTMiddleware())
+	app.Get("/profile",
+		middleware.JWTMiddleware(),
+		controllers.GetProfile(c),
+	)
 	app.Post("/login", controllers.Login(c))
 	app.Post("/register", controllers.Register(c))
 	app.Post("/refresh", controllers.RefreshToken(c))
