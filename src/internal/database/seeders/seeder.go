@@ -5,15 +5,18 @@ import "gorm.io/gorm"
 func InitSeeder(db *gorm.DB) {
 	SeedPermissions(db)
 	SeedRoles(db)
+	SeedClasses(db)
 	SeedAdmin(db)
 	SeedUsers(db)
-	SeedClasses(db)
+	
 	SeedBadgeSettings(db)
 	SeedCourses(db)
 	SeedLevels(db)
 	SeedLessons(db)
 	SeedSubLessons(db)
 	SeedMaterials(db)
+	SeedCodeQuestions(db)
+	SeedEssayQuestions(db)
 
 	// SeedFlowcharts(db)
 	// SeedDepartments(db)

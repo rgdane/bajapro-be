@@ -16,22 +16,22 @@ func SeedLevels(db *gorm.DB) error {
 
 	levels := []models.MLevel{
 		{
-			LevelName:   "Beginner",
+			LevelName:   "Easy",
 			Description: "Level untuk pemula yang baru memulai belajar.",
 			IsActive:    true,
 		},
 		{
-			LevelName:   "Intermediate",
+			LevelName:   "Medium",
 			Description: "Level untuk yang sudah memahami dasar dan ingin meningkatkan skill.",
 			IsActive:    true,
 		},
 		{
-			LevelName:   "Advanced",
+			LevelName:   "Hard",
 			Description: "Level untuk yang sudah mahir dan siap ke materi kompleks.",
 			IsActive:    true,
 		},
 		{
-			LevelName:   "Expert",
+			LevelName:   "Advanced",
 			Description: "Level tertinggi untuk yang sudah profesional.",
 			IsActive:    true,
 		},
