@@ -19,4 +19,5 @@ type TEssayAnswerRepository interface {
 
 	FindTEssayAnswersByEssayQuestionIDAndUserID(essayQuestionID, userID int64) (*models.TEssayAnswer, error)
 	CreateTEssayAnswer(data *models.TEssayAnswer) (*models.TEssayAnswer, error)
+	UpdateTEssayAnswerByID(data *models.TEssayAnswer) (*models.TEssayAnswer, error)
 }

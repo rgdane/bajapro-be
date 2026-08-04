@@ -81,3 +81,60 @@ func (h *TStudentCourseHandler) GetMyCoursesHandler(UserID int64,filter dto.TStu
 
 	return response, nil
 }
+
+func (h *TStudentCourseHandler) GetLeaderboardHandler(
+    courseID int64,
+    classID *int64,
+) ([]dto.LeaderboardResponseDto, error) {
+
+    data, err := h.Service.FindLeaderboard(courseID, classID)
+    if err != nil {
+        return nil, err
+    }
+
+    response := make(
+        []dto.LeaderboardResponseDto,
+        0,
+        len(data),
+    )
+
+    for i := range data {
+
+        mapped, err := mapper.LeaderboardModelToResponseDto(
+            &data[i],
+            i+1,
+        )
+
+        if err != nil {
+            return nil, err
+        }
+
+        response = append(response, *mapped)
+    }
+
+    return response, nil
+}
+
+func (h *TStudentCourseHandler) GetDashboardHandler(userID int64) (*dto.DashboardResponseDto, error) {
+    data, err := h.Service.GetDashboard(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
+
+func (h *TStudentCourseHandler) GetCourseProgressHandler(
+	studentID int64,
+	courseID int64,
+) (*dto.StudentCourseProgressResponse, error) {
+	data, err := h.Service.GetCourseProgress(
+		studentID,
+		courseID,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}

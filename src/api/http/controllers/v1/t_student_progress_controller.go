@@ -6,9 +6,42 @@ import (
 	"jk-api/api/http/controllers/v1/dto"
 	"jk-api/api/http/presenters"
 	"jk-api/internal/container"
-	
+	"strconv"
+
 	"github.com/gofiber/fiber/v2"
 )
+
+func GetStudentProgress(cn *container.AppContainer) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		userID := c.Locals("user_id").(int64)
+
+		courseID, err := strconv.ParseInt(
+			c.Query("courseId"),
+			10,
+			64,
+		)
+		if err != nil || courseID <= 0 {
+			return presenters.ErrorResponseWithMessage(
+				c,
+				fiber.StatusBadRequest,
+				"Invalid course id",
+			)
+		}
+
+		result, err := cn.TStudentProgressHandler.
+			GetStudentProgressHandler(userID, courseID)
+
+		if err != nil {
+			return presenters.ErrorResponse(
+				c,
+				fiber.StatusInternalServerError,
+				err,
+			)
+		}
+
+		return presenters.SuccessResponse(c, result)
+	}
+}
 
 func CompleteTStudentProgress(cn *container.AppContainer) fiber.Handler {
 	return func(c *fiber.Ctx) error {

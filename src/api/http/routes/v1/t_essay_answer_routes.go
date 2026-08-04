@@ -11,7 +11,7 @@ import (
 )
 
 func TEssayAnswerRoute(router fiber.Router, c *container.AppContainer) {
-	app := router.Group("t_essay_answer", middleware.JWTMiddleware())
+	app := router.Group("essay_answer", middleware.JWTMiddleware())
 	app.Get("/essay_questions/:essayQuestionID", controllers.GetTEssayAnswersByEssayQuestionIDAndUserID(c))
 	app.Post("/", controllers.CreateTEssayAnswer(c))
 	

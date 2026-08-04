@@ -11,8 +11,16 @@ import (
 )
 
 func TStudentCourseRoute(router fiber.Router, c *container.AppContainer) {
-	app := router.Group("t_student_courses", middleware.JWTMiddleware())
+	app := router.Group("student", middleware.JWTMiddleware())
+
+	app.Get("/dashboard", controllers.GetDashboard(c))
 	app.Get("/my_courses", controllers.GetMyCourse(c))
+	app.Get("/leaderboard", controllers.GetLeaderboard(c))
+
+	// Course Progress / Enrollment
+	app.Get("/enrollment", controllers.GetCourseProgress(c))
+	app.Get("/course-progress", controllers.GetCourseProgress(c))
+
 	app.Get("/:id", controllers.GetTStudentCourseByID(c))
 	app.Post("/:id/enroll", controllers.EnrollCourse(c))
 }

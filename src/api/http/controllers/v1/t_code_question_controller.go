@@ -32,7 +32,7 @@ func GetTcodeQuestionsBySubLessonID(cn *container.AppContainer) fiber.Handler {
 		if err != nil {
 			return presenters.ErrorResponseWithMessage(c, fiber.StatusBadRequest, "Invalid sub lesson ID")
 		}
-	
+
 		filter := dto.TCodeQuestionFilterDto{
 			Preload: c.Query("preload", "false") == "true",
 		}
@@ -64,3 +64,69 @@ func GetTCodeQuestionByID(cn *container.AppContainer) fiber.Handler {
 	}
 }
 
+func RunCodeTest(cn *container.AppContainer) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+
+		var input dto.CodeTestRunDto
+		questionID, err := strconv.ParseInt(c.Params("questionID"), 10, 64)
+		if err != nil {
+			return presenters.ErrorResponseWithMessage(
+				c,
+				fiber.StatusBadRequest,
+				"Invalid question id",
+			)
+		}
+
+		input.CodeQuestionID = questionID
+
+		if err := c.BodyParser(&input); err != nil {
+			return presenters.ErrorResponseWithMessage(
+				c,
+				fiber.StatusBadRequest,
+				"Invalid request",
+			)
+		}
+
+		result, err := cn.TCodeQuestionHandler.RunCodeTestHandler(&input)
+		if err != nil {
+			return presenters.ErrorResponse(
+				c,
+				fiber.StatusInternalServerError,
+				err,
+			)
+		}
+
+		return presenters.SuccessResponse(c, result)
+	}
+}
+
+func SubmitCodeTest(cn *container.AppContainer) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+
+		var input dto.SubmitCodeTestDto
+		userID := c.Locals("user_id").(int64)
+
+		if err := c.BodyParser(&input); err != nil {
+			return presenters.ErrorResponseWithMessage(
+				c,
+				fiber.StatusBadRequest,
+				"Invalid request",
+			)
+		}
+
+		result, err := cn.TCodeQuestionHandler.SubmitCodeTestHandler(
+			userID,
+			&input,
+		)
+
+		if err != nil {
+			return presenters.ErrorResponse(
+				c,
+				fiber.StatusInternalServerError,
+				err,
+			)
+		}
+
+		return presenters.SuccessResponse(c, result)
+	}
+}

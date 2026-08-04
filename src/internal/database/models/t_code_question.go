@@ -7,10 +7,11 @@ type CodeQuestion struct {
 	SubLessonID  int64      `gorm:"column:sub_lesson_id" json:"sub_lesson_id"`
 	CodeQuestion string     `gorm:"column:code_question;type:text" json:"code_question"`
 	Image        string     `gorm:"type:text" json:"image"`
-	Score        int        `gorm:"column:score" json:"score"`
+	Score        int        `gorm:"column:score" json:"score" default:"30"`
+	IsActive     bool       `gorm:"column:isactive;default:true" json:"isactive"`
 	Hint         string     `gorm:"type:text" json:"hint"`
 	CreatedAt    time.Time  `gorm:"column:created_at;autoCreateTime" json:"created_at"`
-	UpdatedAt    *time.Time `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
+	UpdatedAt    time.Time `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
 
 	// Foreign Key Relationships
 	SubLesson *MSubLesson `gorm:"foreignKey:SubLessonID;references:ID" json:"sub_lesson"`

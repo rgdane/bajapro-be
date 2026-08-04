@@ -44,4 +44,11 @@ type TStudentProgressRepository interface {
 		courseID int64,
 		percentage float64,
 	) error
+
+	CountCompleted(userID int64) (int64, error)
+	FindByUserAndCourse(
+	userID int64,
+	courseID int64,
+) ([]models.TStudentProgress, error)
+	FindLatest(userID int64, limit int) ([]models.TStudentProgress, error)
 }

@@ -20,4 +20,8 @@ type EssayQuestionRepository interface {
 	FindEssayQuestionByID(id int64) (*models.EssayQuestion, error)
 	FindEssayQuestionsByCodeQuestionID(codeQuestionID int64) ([]models.EssayQuestion, error)
 	CreateEssayQuestion(data *models.EssayQuestion) (*models.EssayQuestion, error)
+	FindActiveEssayQuestions() (
+	[]models.EssayQuestion,
+	error,
+)
 }

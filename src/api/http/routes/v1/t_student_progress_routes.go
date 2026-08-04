@@ -11,6 +11,9 @@ import (
 )
 
 func TStudentProgressRoutes(router fiber.Router, c *container.AppContainer) {
-	app := router.Group("t_student_progress", middleware.JWTMiddleware())
+	app := router.Group("progress", middleware.JWTMiddleware())
+
+	app.Get("/", controllers.GetStudentProgress(c))
+
 	app.Post("/complete", controllers.CompleteTStudentProgress(c))
 }

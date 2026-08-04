@@ -3,6 +3,7 @@
 package mapper
 
 import (
+	"errors"
 	"jk-api/api/http/controllers/v1/dto"
 	"jk-api/internal/database/models"
 )
@@ -12,7 +13,6 @@ func EnrollTStudentCourseDtoToModel(userID int64, courseID int64) (*models.TStud
 		UserID: userID,
 		CourseID: courseID,
 		BadgeID: 1,
-		ProgressPercentage: 0,
 		TotalScore: 0,
 	}
 
@@ -30,3 +30,26 @@ func TStudentCourseModelToResponseDto(data *models.TStudentCourse) (*dto.TStuden
 
 	return responseDto, nil
 }
+
+func LeaderboardModelToResponseDto(
+	item *models.Leaderboard,
+	rank int,
+) (*dto.LeaderboardResponseDto, error) {
+	if item == nil {
+		return nil, errors.New("leaderboard data is nil")
+	}
+
+	return &dto.LeaderboardResponseDto{
+		ID:           item.UserID,
+		Rank:         rank,
+		Name:         item.Name,
+		BadgeName:    item.BadgeName,
+		BadgeImage:   item.BadgeImage,
+		ReadingScore: item.ReadingScore,
+		CodingScore:  item.CodingScore,
+		EssayScore:   item.EssayScore,
+		TotalScore:   item.TotalScore,
+	}, nil
+}
+
+

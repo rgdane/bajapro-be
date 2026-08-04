@@ -15,5 +15,7 @@ func TCodeQuestionRoute(router fiber.Router, c *container.AppContainer) {
 	app.Get("/sub_lesson/:subLessonID", controllers.GetTcodeQuestionsBySubLessonID(c))
 	app.Get("/:id", controllers.GetTCodeQuestionByID(c))
 	app.Post("/", controllers.CreateTCodeQuestions(c))
-	
+	app.Post("/:questionID/run", controllers.RunCodeTest(c))
+	app.Post("/:questionID/submit", controllers.SubmitCodeTest(c))
+
 }

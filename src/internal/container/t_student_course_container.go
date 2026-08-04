@@ -10,6 +10,6 @@ import (
 
 func InitTStudentCourseContainer() *handlers.TStudentCourseHandler {
 	repo := sql.NewTStudentCourseRepository()
-	service := services.NewTStudentCourseService(repo)
+	service := services.NewTStudentCourseService(repo, sql.NewMSubLessonRepository(), sql.NewTStudentProgressRepository(), sql.NewMBadgeSettingsRepository(), sql.NewMLessonRepository(), sql.NewUserRepository())
 	return handlers.NewTStudentCourseHandler(service)
 }

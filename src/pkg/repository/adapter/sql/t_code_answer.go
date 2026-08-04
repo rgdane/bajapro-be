@@ -19,4 +19,9 @@ type TCodeAnswerRepository interface {
 
 	FindTCodeAnswersByCodeQuestionID(codeQuestionID int64) ([]models.TCodeAnswer, error)
 	CreateTCodeAnswer(data *models.TCodeAnswer) (*models.TCodeAnswer, error)
+	FindByUserIDAndCodeQuestionID(
+		userID int64,
+		codeQuestionID int64,
+	) (*models.TCodeAnswer, error)
+	UpdateTCodeAnswer(data *models.TCodeAnswer) (*models.TCodeAnswer, error)
 }

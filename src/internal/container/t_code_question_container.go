@@ -10,6 +10,6 @@ import (
 
 func InitTCodeQuestionContainer() *handlers.TCodeQuestionHandler {
 	repo := sql.NewTCodeQuestionRepository()
-	service := services.NewTCodeQuestionService(repo)
+	service := services.NewTCodeQuestionService(repo, sql.NewUserRepository(), sql.NewTCodeAnswerRepository(), sql.NewEssayQuestionRepository(), sql.NewTEssayAnswerRepository(), sql.NewTStudentCourseRepository(), sql.NewMBadgeSettingsRepository(), services.NewTStudentProgressService(sql.NewTStudentProgressRepository()))
 	return handlers.NewTCodeQuestionHandler(service)
 }

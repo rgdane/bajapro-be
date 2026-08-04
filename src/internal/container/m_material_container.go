@@ -10,6 +10,6 @@ import (
 
 func InitMMaterialContainer() *handlers.MMaterialHandler {
 	repo := sql.NewMMaterialRepository()
-	service := services.NewMMaterialService(repo)
+	service := services.NewMMaterialService(repo, sql.NewMLessonRepository(), sql.NewEssayQuestionRepository())
 	return handlers.NewMMaterialHandler(service)
 }

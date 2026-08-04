@@ -72,3 +72,44 @@ func (h *TCodeQuestionHandler) GetTCodeQuestionHandlerByID(filter dto.TCodeQuest
 	}
 	return mapper.TCodeQuestionModelToResponseDto(data)
 }
+
+func (h *TCodeQuestionHandler) RunCodeTestHandler(
+	input *dto.CodeTestRunDto,
+) (*dto.CodeTestRunResponseDto, error) {
+
+	return h.Service.RunCodeTest(input)
+}
+
+func (h *TCodeQuestionHandler) SubmitCodeTestHandler(
+	userID int64,
+	input *dto.SubmitCodeTestDto,
+) (*dto.SubmitCodeTestResponseDto, error) {
+
+	db := h.Service.GetDB().Begin()
+	committed := false
+
+	defer func() {
+		if r := recover(); r != nil {
+			db.Rollback()
+			panic(r)
+		}
+		if !committed {
+			db.Rollback()
+		}
+	}()
+
+	tCodeQuestionService := h.Service.WithTx(db)
+
+	result, err := tCodeQuestionService.SubmitCodeTest(userID, input)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := db.Commit().Error; err != nil {
+		return nil, err
+	}
+
+	committed = true
+
+	return result, nil
+}

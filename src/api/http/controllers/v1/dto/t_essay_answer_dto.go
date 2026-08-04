@@ -7,13 +7,13 @@ import (
 )
 
 type TEssayAnswerCreateDto struct {
-	EssayQuestionID int64  `json:"essay_question_id" validate:"required"`
-	Answer         string `json:"answer" validate:"required"`
-	KonteksPenjelasan int `json:"konteks_penjelasan" validate:"required"`
-	Keruntutan      int    `json:"keruntutan" validate:"required"`
-	Kebenaran       int    `json:"kebenaran" validate:"required"`
-	TeacherNotes    string `json:"teacher_notes"`
-	IsApprovedByTeacher bool   `json:"is_approved_by_teacher"`
+	EssayQuestionID     int64  `json:"essay_question_id" validate:"required"`
+	Answer              string `json:"answer" validate:"required"`
+	KonteksPenjelasan   int    `json:"konteks_penjelasan" validate:"required"`
+	Keruntutan          int    `json:"keruntutan" validate:"required"`
+	Kebenaran           int    `json:"kebenaran" validate:"required"`
+	TeacherNotes        string `json:"teacher_notes"`
+	IsApprovedByTeacher bool    `json:"is_approved_by_teacher"`
 }
 
 // TEssayAnswerResponseDto represents a detailed view of TEssayAnswer with related data.

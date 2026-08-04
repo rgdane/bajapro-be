@@ -215,3 +215,61 @@ func (repo *tStudentProgressRepository) UpdateStudentCourseProgress(
 		Update("progress_percentage", percentage).
 		Error
 }
+
+func (repo *tStudentProgressRepository) CountCompleted(userID int64) (int64, error) {
+	var count int64
+
+	err := repo.db.
+		Model(&models.TStudentProgress{}).
+		Where("user_id = ?", userID).
+		Where("status = ?", "completed").
+		Count(&count).
+		Error
+
+	return count, err
+}
+
+func (repo *tStudentProgressRepository) FindByUserAndCourse(
+	userID int64,
+	courseID int64,
+) ([]models.TStudentProgress, error) {
+
+	var progresses []models.TStudentProgress
+
+	err := repo.db.
+		Where(
+			"user_id = ? AND course_id = ?",
+			userID,
+			courseID,
+		).
+		Find(&progresses).
+		Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return progresses, nil
+}
+
+func (repo *tStudentProgressRepository) FindLatest(
+	userID int64,
+	limit int,
+) ([]models.TStudentProgress, error) {
+
+	var data []models.TStudentProgress
+
+	err := repo.db.
+		Preload("SubLesson").
+		Preload("SubLesson.Lesson").
+		Preload("SubLesson.Lesson.Course").
+		Preload("SubLesson.Lesson.Level").
+		Where("user_id = ?", userID).
+		Where("status = ?", "completed").
+		Order("updated_at DESC").
+		Limit(limit).
+		Find(&data).
+		Error
+
+	return data, err
+}

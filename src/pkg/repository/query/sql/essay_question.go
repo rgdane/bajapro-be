@@ -136,3 +136,21 @@ func (repo *essayQuestionRepository) FindEssayQuestionsByCodeQuestionID(codeQues
 		WithPreloads("CodeQuestion").
 		FindAll()
 }
+
+func (repo *essayQuestionRepository) FindActiveEssayQuestions() (
+	[]models.EssayQuestion,
+	error,
+) {
+	var questions []models.EssayQuestion
+
+	err := repo.db.
+		Where("isactive = ?", true).
+		Find(&questions).
+		Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return questions, nil
+}

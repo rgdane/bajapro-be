@@ -128,3 +128,39 @@ func (repo *tCodeAnswerRepository) FindTCodeAnswersByCodeQuestionID(codeQuestion
 		WithPreloads("CodeQuestion", "User").
 		FindAll()
 }
+
+func (repo *tCodeAnswerRepository) FindByUserIDAndCodeQuestionID(
+	userID int64,
+	codeQuestionID int64,
+) (*models.TCodeAnswer, error) {
+
+	return repo.getQueryBuilder().
+		WithWhere(func(db *gorm.DB) *gorm.DB {
+			return db.Where(
+				"user_id = ? AND code_question_id = ?",
+				userID,
+				codeQuestionID,
+			)
+		}).
+		WithPreloads("User", "CodeQuestion").
+		FindOne()
+}
+
+func (repo *tCodeAnswerRepository) UpdateTCodeAnswer(
+	data *models.TCodeAnswer,
+) (*models.TCodeAnswer, error) {
+
+	err := repo.db.
+		Model(&models.TCodeAnswer{}).
+		Where("id = ?", data.ID).
+		Updates(map[string]interface{}{
+			"is_code_right":  data.IsCodeRight,
+			"exploring_score": data.ExploringScore,
+		}).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}

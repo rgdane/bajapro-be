@@ -7,11 +7,14 @@ import (
 )
 
 type TCodeQuestionCreateDto struct {
-	SubLessonID  int64  `json:"sub_lesson_id" validate:"required"`
-	CodeQuestion string `json:"code_question" validate:"required"`
-	Image        string `json:"image"`
-	Score        int    `json:"score" validate:"required"`
-	Hint         string `json:"hint"`
+	SubLessonID      int64  `json:"sub_lesson_id" validate:"required"`
+	CodeQuestion     string `json:"code_question" validate:"required"`
+	Image            string `json:"image"`
+	Score            int    `json:"score" validate:"required"`
+	Hint             string `json:"hint"`
+	TestCasesData    string `json:"test_cases_data" validate:"required"`
+	SolutionTemplate string `json:"solution_template"`
+	ClassName        string `json:"class_name"`
 }
 
 // TCodeQuestionResponseDto represents a detailed view of TCodeQuestion with related data.
@@ -28,4 +31,52 @@ type TCodeQuestionFilterDto struct {
 	Name        string
 	ShowDeleted bool
 	Restore     bool
+}
+
+type CodeTestRunDto struct {
+	Code           string `json:"code" validate:"required"`
+	CodeQuestionID int64  `json:"code_question_id" validate:"required"`
+	User           string `json:"user" validate:"required,email"`
+}
+
+type PythonRunCodeRequestDto struct {
+	Code       string `json:"code"`
+	QuestionID int64  `json:"question_id"`
+	User       string `json:"user"`
+}
+
+// Response dari Python Compiler
+type CodeTestRunResponseDto struct {
+	Success    bool                  `json:"success"`
+	Result     CodeTestResultDto     `json:"result"`
+	QuestionID int64                `json:"question_id"`
+	ClassName  string                `json:"class_name"`
+}
+
+// Detail hasil compile & JUnit
+type CodeTestResultDto struct {
+	Status     string `json:"status"`
+	Output     string `json:"output"`
+	Message    string `json:"message"`
+	Passed     bool   `json:"passed"`
+	Point      int    `json:"point"`
+	CanSubmit  bool   `json:"can_submit"`
+}
+
+type SubmitCodeTestDto struct {
+    CodeQuestionID int64 `json:"code_question_id" validate:"required"`
+    SubLessonID    int64 `json:"sub_lesson_id" validate:"required"`
+    CourseID       int64 `json:"course_id" validate:"required"`
+    LevelID        int64 `json:"level_id"`
+
+    Score       int      `json:"score"`
+    CodeExplain string   `json:"code_explain"`
+
+    Answer          []string `json:"answer"`
+    EssayQuestionID []int64  `json:"essay_question_id"`
+}
+
+type SubmitCodeTestResponseDto struct {
+	Success bool   `json:"success"`
+	Message string `json:"message"`
 }

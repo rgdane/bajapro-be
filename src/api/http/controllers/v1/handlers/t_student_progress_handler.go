@@ -15,6 +15,37 @@ func NewTStudentProgressHandler(service services.TStudentProgressService) *TStud
 	return &TStudentProgressHandler{Service: service}
 }
 
+func (h *TStudentProgressHandler) GetStudentProgressHandler(
+	userID int64,
+	courseID int64,
+) ([]dto.TStudentProgressResponseDto, error) {
+
+	data, err := h.Service.GetStudentProgress(
+		userID,
+		courseID,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	response := make(
+		[]dto.TStudentProgressResponseDto,
+		0,
+		len(data),
+	)
+
+	for _, item := range data {
+		dtoItem, err := mapper.TStudentProgressModelToResponseDto(&item)
+		if err != nil {
+			return nil, err
+		}
+
+		response = append(response, *dtoItem)
+	}
+
+	return response, nil
+}
+
 func (h *TStudentProgressHandler) CompleteTStudentProgressHandler(input *dto.CompleteTStudentProgressDto, userID int64) (*dto.TStudentProgressResponseDto, error) {
 	db := h.Service.GetDB().Begin()
 	committed := false
@@ -47,4 +78,6 @@ func (h *TStudentProgressHandler) CompleteTStudentProgressHandler(input *dto.Com
 
 	return mapper.TStudentProgressModelToResponseDto(createdData)
 }
+
+
 

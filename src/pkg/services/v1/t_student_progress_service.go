@@ -12,7 +12,10 @@ import (
 
 type TStudentProgressService interface {
 	WithTx(tx *gorm.DB) TStudentProgressService
-
+	GetStudentProgress(
+	userID int64,
+	courseID int64,
+) ([]models.TStudentProgress, error)
 	CompleteTStudentProgress(input *models.TStudentProgress) (*models.TStudentProgress, error)
 	GetDB() *gorm.DB
 }
@@ -38,6 +41,22 @@ func (s *tStudentProgressService) GetDB() *gorm.DB {
 		return s.tx
 	}
 	return config.DB
+}
+
+func (s *tStudentProgressService) GetStudentProgress(
+	userID int64,
+	courseID int64,
+) ([]models.TStudentProgress, error) {
+
+	data, err := s.repo.FindByUserAndCourse(
+		userID,
+		courseID,
+	)
+	if err != nil {
+		return nil, gorm_err.TranslateGormError(err)
+	}
+
+	return data, nil
 }
 
 func (s *tStudentProgressService) CompleteTStudentProgress(

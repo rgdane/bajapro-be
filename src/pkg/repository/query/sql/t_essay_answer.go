@@ -119,6 +119,17 @@ func (repo *tEssayAnswerRepository) CreateTEssayAnswer(data *models.TEssayAnswer
 	return data, nil
 }
 
+func (repo *tEssayAnswerRepository) UpdateTEssayAnswerByID(
+	data *models.TEssayAnswer,
+) (*models.TEssayAnswer, error) {
+
+	if err := repo.getQueryBuilder().Save(data); err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
+
 
 func (repo *tEssayAnswerRepository) FindTEssayAnswersByEssayQuestionIDAndUserID(essayQuestionID, userID int64) (*models.TEssayAnswer, error) {
 	return repo.getQueryBuilder().

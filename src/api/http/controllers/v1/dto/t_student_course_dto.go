@@ -4,8 +4,8 @@ package dto
 
 import (
 	"jk-api/internal/database/models"
+	"time"
 )
-
 
 // TStudentCourseResponseDto represents a detailed view of TStudentCourse with related data.
 type TStudentCourseResponseDto struct {
@@ -22,3 +22,109 @@ type TStudentCourseFilterDto struct {
 	ShowDeleted bool
 	Restore     bool
 }
+type LeaderboardResponseDto struct {
+	ID           int64  `json:"id"`
+	Rank         int    `json:"rank"`
+	Name         string `json:"name"`
+	BadgeName    string `json:"badge_name"`
+	BadgeImage   string `json:"badge_image"`
+	ReadingScore int    `json:"reading_score"`
+	CodingScore  int    `json:"coding_score"`
+	EssayScore   int    `json:"essay_score"`
+	TotalScore   int    `json:"total_score"`
+}
+
+type DashboardResponseDto struct {
+	EnrolledCount       int                    `json:"enrolledCount"`
+	SubLessonTotal      int64                    `json:"subLessonTotal"`
+	SubLessonCompleted  int64                    `json:"subLessonCompleted"`
+	OverallProgress     int                      `json:"overallProgress"`
+	MaterialsTotal	   int64                    `json:"materialsTotal"`
+	MaterialsCompleted   int64                    `json:"materialsCompleted"`
+
+	LatestProgress      []RecentProgressDto      `json:"latestProgress"`
+	LessonHistory       []LessonHistoryDto       `json:"lessonHistory"`
+	Achievement         AchievementDto           `json:"achievement"`
+	Top5Leaderboard     []LeaderboardResponseDto `json:"top5Leaderboard"`
+}
+
+type AchievementDto struct {
+	Badge      string `json:"badge"`
+	BadgeImage string `json:"badgeImage"`
+	Rank       any    `json:"rank"`
+	TotalScore int    `json:"totalScore"`
+}
+
+
+type RecentProgressDto struct {
+	ID          int64        `json:"id"`
+	CourseID    int64        `json:"courseId"`
+	SubLessonID int64        `json:"subLessonId"`
+	Status      string       `json:"status"`
+	UpdatedAt   time.Time    `json:"updatedAt"`
+	SubLesson   SubLessonDto `json:"subLesson"`
+}
+
+type SubLessonDto struct {
+	ID     int64     `json:"id"`
+	Title  string    `json:"title"`
+	Lesson LessonDto `json:"lesson"`
+}
+
+type LessonDto struct {
+	ID     int64     `json:"id"`
+	Title  string    `json:"title"`
+	Course CourseDto `json:"course"`
+	Level  LevelDto  `json:"level"`
+}
+
+type CourseDto struct {
+	ID         int64  `json:"id"`
+	CourseName string `json:"course_name"`
+	Image      string `json:"image,omitempty"`
+	Description string `json:"description,omitempty"`
+}
+
+type LevelDto struct {
+	ID    int64  `json:"id"`
+	Title string `json:"title"`
+}
+
+type LessonHistoryDto struct {
+	ID               int64     `json:"id"`
+	StudentID        int64     `json:"student_id"`
+	CourseID         int64     `json:"courseId"`
+	CourseIDAlias    int64     `json:"course_id"`
+	TotalScore       int       `json:"total_score"`
+	BadgeID          int64    `json:"badge_id"`
+	IsActive         bool      `json:"isactive"`
+	CreatedAt        time.Time `json:"created_at"`
+	UpdatedAt        time.Time `json:"updated_at"`
+
+	Course           CourseDto `json:"course"`
+	ProgressPercent  int       `json:"progressPercent"`
+}
+
+type StudentCourseProgressResponse struct {
+	ID         int64          `json:"id"`
+	StudentID  int64          `json:"student_id"`
+	CourseID   int64          `json:"course_id"`
+	TotalScore int            `json:"total_score"`
+	BadgeID    int64         `json:"badge_id"`
+	IsActive   bool           `json:"isactive"`
+	CreatedAt  time.Time      `json:"created_at"`
+	UpdatedAt  time.Time      `json:"updated_at"`
+	Badge      *BadgeResponse `json:"badge"`
+}
+
+type BadgeResponse struct {
+	ID        int64     `json:"id"`
+	Name      string    `json:"name"`
+	Image     string    `json:"image"`
+	MinScore  int       `json:"min_score"`
+	MaxScore  int       `json:"max_score"`
+	IsActive  bool      `json:"isactive"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+

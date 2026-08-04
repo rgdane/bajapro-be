@@ -32,3 +32,19 @@ func TStudentProgressModelToResponseDto(data *models.TStudentProgress) (*dto.TSt
 
 	return responseDto, nil
 }
+
+func StudentProgressModelsToRecentProgressDto(
+	data []models.TStudentProgress,
+) []dto.RecentProgressDto {
+    var recentProgressDtos []dto.RecentProgressDto
+    for _, progress := range data {
+        recentProgressDtos = append(recentProgressDtos, dto.RecentProgressDto{
+            ID:          progress.ID,
+            CourseID:    progress.CourseID,
+            SubLessonID: progress.SubLessonID,
+            Status:      progress.Status,
+            UpdatedAt:   *progress.UpdatedAt,
+        })
+    }
+    return recentProgressDtos
+}

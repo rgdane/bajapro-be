@@ -20,4 +20,9 @@ type TStudentCourseRepository interface {
 	EnrollCourse(data *models.TStudentCourse) (*models.TStudentCourse, error)
 	FindMyCourse(UserID int64) ([]models.TStudentCourse, error)
 	FindByID(id int64, userID int64) (*models.TStudentCourse, error)
+	FindByUserIDAndCourseID(userID int64, courseID int64) (*models.TStudentCourse, error)
+	UpdateTotalScoreByID(data *models.TStudentCourse) (*models.TStudentCourse, error)
+	FindLeaderboard(courseID int64, classID *int64) ([]models.Leaderboard, error)
+	FindAllScore() ([]models.TStudentCourse, error)
+	
 }
