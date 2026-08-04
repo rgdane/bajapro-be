@@ -11,7 +11,7 @@ import (
 )
 
 func MClassRoutes(router fiber.Router, c *container.AppContainer) {
-	app := router.Group("m_classes", middleware.JWTMiddleware())
+	app := router.Group("class", middleware.JWTMiddleware())
 	app.Get("/", controllers.GetMClasses(c))
 	app.Post("/", controllers.CreateMClasses(c))
 	app.Get("/:id", controllers.GetMClassByID(c))

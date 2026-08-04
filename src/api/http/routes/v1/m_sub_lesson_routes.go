@@ -11,7 +11,7 @@ import (
 )
 
 func MSubLessonRoutes(router fiber.Router, c *container.AppContainer) {
-	app := router.Group("m_sub_lessons", middleware.JWTMiddleware())
+	app := router.Group("sub_lessons", middleware.JWTMiddleware())
 
 	app.Get("/", controllers.GetMSubLessons(c))
 	app.Get("/:id", controllers.GetMSubLessonByID(c))

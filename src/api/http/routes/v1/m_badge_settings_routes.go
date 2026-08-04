@@ -11,7 +11,7 @@ import (
 )
 
 func MBadgeSettings(router fiber.Router, c *container.AppContainer) {
-	app := router.Group("m_badge_settings", middleware.JWTMiddleware())
+	app := router.Group("badge_settings", middleware.JWTMiddleware())
 	app.Get("/", controllers.GetMBadgeSettings(c))
 	app.Post("/", controllers.CreateMBadgeSettings(c))
 	app.Get("/:id", controllers.GetMBadgeSettingsByID(c))

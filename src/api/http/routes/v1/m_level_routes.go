@@ -11,7 +11,7 @@ import (
 )
 
 func MLevelRoutes(router fiber.Router, c *container.AppContainer) {
-	app := router.Group("/m_levels", middleware.JWTMiddleware())
+	app := router.Group("/levels", middleware.JWTMiddleware())
 	app.Get("/", controllers.GetMLevels(c))
 	app.Post("/", controllers.CreateMLevels(c))
 	app.Get("/:id", controllers.GetMLevelByID(c))
