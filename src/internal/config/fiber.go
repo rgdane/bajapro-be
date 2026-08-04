@@ -54,9 +54,9 @@ func setupMiddleware(app *fiber.App) {
 	}))
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "*",
-		AllowHeaders:     "Origin,Content-Type,Accept,Authorization,Omni-Token",
-		AllowCredentials: false,
-		MaxAge:           86400,
+		AllowOrigins:     "http://localhost:3000,http://labai.polinema.ac.id:3020",
+		AllowMethods:     "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+		AllowHeaders:     "Origin,Content-Type,Accept,Authorization",
+		AllowCredentials: true,
 	}))
 }

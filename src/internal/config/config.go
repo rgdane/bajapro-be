@@ -32,6 +32,8 @@ type Config struct {
 	Neo4jPassword string
 
 	OmniChannelURI string
+
+	CompilerURL string
 }
 
 func LoadConfig() error {
@@ -58,6 +60,7 @@ func LoadConfig() error {
 		Neo4jPassword: getEnv("NEO4J_PASSWORD", "password"),
 
 		OmniChannelURI: getEnv("OMNI_CHANNEL_URI", "http://localhost:3000"),
+		CompilerURL:    getEnv("COMPILER_URL", "http://localhost:8000/"),
 	}
 
 	return nil
