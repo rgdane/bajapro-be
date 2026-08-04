@@ -13,6 +13,57 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+func GetCourseMaterialTree(
+	cn *container.AppContainer,
+) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		courseID, err := strconv.ParseInt(
+			c.Query("courseId"),
+			10,
+			64,
+		)
+		if err != nil || courseID <= 0 {
+			return presenters.ErrorResponseWithMessage(
+				c,
+				fiber.StatusBadRequest,
+				"Invalid course id",
+			)
+		}
+
+		levelID, err := strconv.ParseInt(
+			c.Query("levelId"),
+			10,
+			64,
+		)
+		if err != nil || levelID <= 0 {
+			return presenters.ErrorResponseWithMessage(
+				c,
+				fiber.StatusBadRequest,
+				"Invalid level id",
+			)
+		}
+
+		result, err := cn.MMaterialHandler.
+			GetCourseMaterialTreeHandler(
+				courseID,
+				levelID,
+			)
+
+		if err != nil {
+			return presenters.ErrorResponse(
+				c,
+				fiber.StatusInternalServerError,
+				err,
+			)
+		}
+
+		return presenters.SuccessResponse(
+			c,
+			result,
+		)
+	}
+}
+
 func GetMMaterials(cn *container.AppContainer) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		cursor, _ := helper.ParseQueryInt64(c, "cursor")

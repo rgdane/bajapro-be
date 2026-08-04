@@ -4,6 +4,7 @@ package dto
 
 import (
 	"jk-api/internal/database/models"
+	"time"
 )
 
 type ReadMMaterialDto struct {
@@ -58,4 +59,72 @@ type MMaterialFilterDto struct {
 	Name        string
 	ShowDeleted bool
 	Restore     bool
+}
+
+type CourseMaterialTreeResponseDto struct {
+	ID           int64                      `json:"id"`
+	CourseID     int64                      `json:"course_id"`
+	LevelID      int64                      `json:"level_id"`
+	Title        string                     `json:"title"`
+	Description  string                     `json:"description"`
+	Position     int                        `json:"position"`
+	ImgThumbnail string                     `json:"img_thumbnail"`
+	Published    bool                       `json:"published"`
+	IsActive     bool                       `json:"isactive"`
+	CreatedAt    time.Time                  `json:"created_at"`
+	UpdatedAt    time.Time                  `json:"updated_at"`
+	SubLessons   []CourseSubLessonResponseDto `json:"sublessons"`
+}
+
+type CourseSubLessonResponseDto struct {
+	ID             int64                       `json:"id"`
+	LessonID       int64                       `json:"lesson_id"`
+	Title          string                      `json:"title"`
+	OrderPosition  int                         `json:"order_position"`
+	IsActive       bool                        `json:"isactive"`
+	CreatedAt      time.Time                   `json:"created_at"`
+	UpdatedAt      time.Time                   `json:"updated_at"`
+	Materials      []CourseMaterialResponseDto `json:"materials"`
+	CodeQuestion   *CourseCodeQuestionResponseDto `json:"codeQuestion"`
+	EssayQuestions []CourseEssayQuestionResponseDto `json:"essayQuestions"`
+}
+
+type CourseMaterialResponseDto struct {
+	ID              int64     `json:"id"`
+	SubLessonID     int64     `json:"sub_lesson_id"`
+	Title           string    `json:"title"`
+	Materials       string    `json:"materials"`
+	URLVideo        string    `json:"url_video"`
+	ContentPosition int       `json:"content_position"`
+	PromptLim       string    `json:"prompt_lim"`
+	Published       bool      `json:"published"`
+	IsActive        bool      `json:"isactive"`
+	CreatedAt       time.Time `json:"created_at"`
+	UpdatedAt       time.Time `json:"updated_at"`
+}
+
+type CourseCodeQuestionResponseDto struct {
+	ID           int64     `json:"id"`
+	SubLessonID  int64     `json:"sub_lesson_id"`
+	CodeQuestion string    `json:"code_question"`
+	Image        string    `json:"image"`
+	Score        int       `json:"score"`
+	Hint         string    `json:"hint"`
+	IsActive     bool      `json:"isactive"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
+}
+
+type CourseEssayQuestionResponseDto struct {
+	ID             int64     `json:"id"`
+	SubLessonID    int64    `json:"sub_lesson_id"`
+	CodeQuestionID int64    `json:"code_question_id"`
+	EssayQuestion  string    `json:"essay_question"`
+	Answer         string    `json:"answer"`
+	Answer2        string    `json:"answer_2"`
+	Answer3        string    `json:"answer_3"`
+	Answer4        string    `json:"answer_4"`
+	IsActive       bool      `json:"isactive"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
 }

@@ -10,17 +10,43 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func MMaterialRoutes(router fiber.Router, c *container.AppContainer) {
-	app := router.Group("m_materials", middleware.JWTMiddleware())
+func MMaterialRoutes(
+	router fiber.Router,
+	c *container.AppContainer,
+) {
+	app := router.Group(
+		"materials",
+		middleware.JWTMiddleware(),
+	)
+
+	// Course material tree
+	app.Get(
+		"/tree",
+		controllers.GetCourseMaterialTree(c),
+	)
 
 	app.Get("/", controllers.GetMMaterials(c))
 	app.Get("/:id", controllers.GetMMaterialByID(c))
-	app.Post("/bulk-create", controllers.BulkCreateMMaterials(c))
-	app.Put("/bulk-update", controllers.BulkUpdateMMaterials(c))
-	app.Delete("/bulk-delete", controllers.BulkDeleteMMaterials(c))
+
+	app.Post(
+		"/bulk-create",
+		controllers.BulkCreateMMaterials(c),
+	)
+	app.Put(
+		"/bulk-update",
+		controllers.BulkUpdateMMaterials(c),
+	)
+	app.Delete(
+		"/bulk-delete",
+		controllers.BulkDeleteMMaterials(c),
+	)
+
 	app.Post("/", controllers.CreateMMaterials(c))
 	app.Put("/:id", controllers.UpdateMMaterials(c))
 	app.Delete("/:id", controllers.DeleteMMaterials(c))
 
-	app.Get("/:id/read", controllers.CreateTWonderingScore(c))
+	app.Post(
+		"/:id/read",
+		controllers.CreateTWonderingScore(c),
+	)
 }

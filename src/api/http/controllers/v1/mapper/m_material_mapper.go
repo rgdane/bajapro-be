@@ -51,7 +51,7 @@ func UpdateMMaterialDtoToModel(dto *dto.UpdateMMaterialDto) (map[string]interfac
 		updates["published"] = *dto.Published
 	}
 	if dto.IsActive != nil {
-		updates["is_active"] = *dto.IsActive
+		updates["isactive"] = *dto.IsActive
 	}
 
 

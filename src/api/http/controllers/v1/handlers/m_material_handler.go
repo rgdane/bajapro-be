@@ -16,6 +16,16 @@ func NewMMaterialHandler(service services.MMaterialService) *MMaterialHandler {
 	return &MMaterialHandler{Service: service}
 }
 
+func (h *MMaterialHandler) GetCourseMaterialTreeHandler(
+	courseID int64,
+	levelID int64,
+) ([]dto.CourseMaterialTreeResponseDto, error) {
+	return h.Service.GetCourseMaterialTree(
+		courseID,
+		levelID,
+	)
+}
+
 func (h *MMaterialHandler) CreateMMaterialHandler(input *dto.CreateMMaterialDto) (*dto.MMaterialResponseDto, error) {
 	db := h.Service.GetDB().Begin()
 	committed := false
