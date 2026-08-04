@@ -5,6 +5,7 @@ import "time"
 type Role struct {
 	ID        int64     `gorm:"primaryKey;autoIncrement:false;type:bigint;default:nextval('roles_seq'::regclass)" json:"id"`
 	Name      string    `gorm:"size:100;not null;unique:idx_roles_name" json:"name"`
+	IsActive  bool      `gorm:"column:isactive;default:true" json:"isactive"`
 	CreatedAt time.Time `gorm:"autoCreateTime;index:idx_roles_created_at" json:"created_at"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 

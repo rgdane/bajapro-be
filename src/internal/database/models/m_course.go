@@ -14,7 +14,7 @@ type MCourse struct {
 	DeletedAt    time.Time `gorm:"column:deleted_at;index" json:"deleted_at,omitempty"`
 
 	// Relations
-	Lessons *[]MLesson `gorm:"foreignKey:CourseID;references:ID" json:"lessons"`
+	Lessons []MLesson `gorm:"foreignKey:CourseID;references:ID" json:"lessons"`
 }
 
 func (*MCourse) TableName() string {
