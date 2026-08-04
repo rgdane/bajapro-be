@@ -11,7 +11,7 @@ import (
 )
 
 func MCourses(router fiber.Router, c *container.AppContainer) {
-	app := router.Group("m_courses", middleware.JWTMiddleware())
+	app := router.Group("courses", middleware.JWTMiddleware())
 	app.Get("/", controllers.GetMCourses(c))
 	app.Post("/", controllers.CreateMCourse(c))
 	app.Get("/:id", controllers.GetMCourseByID(c))

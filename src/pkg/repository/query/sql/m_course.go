@@ -139,9 +139,34 @@ func (repo *mCourseRepository) RemoveManyMCourses(ids []int64) error {
 }
 
 func (repo *mCourseRepository) FindMCourse() ([]models.MCourse, error) {
-	return repo.getQueryBuilder().FindAll()
+	return repo.getQueryBuilder().
+		WithPreloads("Lessons").
+		WithPreloads("Lessons.SubLessons").
+		FindAll()
 }
 
-func (repo *mCourseRepository) FindMCourseByID(id int64) (*models.MCourse, error) {
-	return repo.getQueryBuilder().FindByID(id)
+func (repo *mCourseRepository) FindMCourseByID(
+	id int64,
+) (*models.MCourse, error) {
+	var course models.MCourse
+
+	err := repo.db.
+		Preload("Lessons", func(db *gorm.DB) *gorm.DB {
+			return db.
+				Where("isactive = ?", true).
+				Order("position ASC")
+		}).
+		Preload("Lessons.SubLessons", func(db *gorm.DB) *gorm.DB {
+			return db.
+				Where("isactive = ?", true).
+				Order("order_position ASC")
+		}).
+		First(&course, id).
+		Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &course, nil
 }

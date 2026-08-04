@@ -27,16 +27,12 @@ func GetMCourses(cn *container.AppContainer) fiber.Handler {
 
 func GetMCourseByID(cn *container.AppContainer) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		filter := dto.MCourseFilterDto{
-			Preload: c.Query("preload", "false") == "true",
-		}
-
 		id, err := strconv.ParseInt(c.Params("id"), 10, 64)
 		if err != nil {
 			return presenters.ErrorResponseWithMessage(c, fiber.StatusBadRequest, "Invalid ID")
 		}
 
-		data, err := cn.MCourseHandler.GetMCourseByIDHandler(id, filter)
+		data, err := cn.MCourseHandler.GetMCourseDetailByIDHandler(id)
 		if err != nil {
 			return presenters.ErrorResponse(c, fiber.StatusInternalServerError, err)
 		}

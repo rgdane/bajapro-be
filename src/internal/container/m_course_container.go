@@ -10,6 +10,6 @@ import (
 
 func InitMCourseContainer() *handlers.MCourseHandler {
 	repo := sql.NewMCourseRepository()
-	service := services.NewMCourseService(repo)
+	service := services.NewMCourseService(repo, sql.NewMLevelRepository())
 	return handlers.NewMCourseHandler(service)
 }

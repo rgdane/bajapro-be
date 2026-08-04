@@ -87,10 +87,10 @@ func (h *MCourseHandler) DeleteMCourseHandler(id int64) error {
 	return h.Service.DeleteMCourse(id)
 }
 
-func (h *MCourseHandler) GetMCourseByIDHandler(id int64, filter dto.MCourseFilterDto) (*models.MCourse, error) {
-	return h.Service.GetMCourseByID(id, filter)
+func (h *MCourseHandler) GetMCourseDetailByIDHandler(id int64) (*dto.MCourseDetailResponse, error) {
+	return h.Service.GetMCourseDetailByID(id)
 }
 
-func (h *MCourseHandler) GetAllMCoursesHandler(filter dto.MCourseFilterDto) ([]models.MCourse, error) {
+func (h *MCourseHandler) GetAllMCoursesHandler(filter dto.MCourseFilterDto) ([]dto.MCourseResponseDto, error) {
 	return h.Service.GetAllMCourses(filter)
 }

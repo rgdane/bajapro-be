@@ -45,7 +45,7 @@ func UpdateMCourseDtoToModel(dto *dto.UpdateMCourseDto) (
 		payload["published"] = *dto.Published
 	}
 	if dto.IsActive != nil {
-		payload["is_active"] = *dto.IsActive
+		payload["isactive"] = *dto.IsActive
 	}
 
 	return payload, associations, nil
@@ -57,8 +57,25 @@ func MCourseModelToResponseDto(data *models.MCourse) (*dto.MCourseResponseDto, e
 		return nil, nil
 	}
 
+	lessonCount := len(data.Lessons)
+
+	subLessonCount := 0
+	for _, lesson := range data.Lessons {
+		subLessonCount += len(lesson.SubLessons)
+	}
+
 	responseDto := &dto.MCourseResponseDto{
-		MCourse: *data,
+		ID:            data.ID,
+		CourseName:    data.CourseName,
+		Description:   data.Description,
+		ImgThumbnail:  data.ImgThumbnail,
+		Published:     data.Published,
+		IsActive:      data.IsActive,
+		CreatedAt:     data.CreatedAt,
+		UpdatedAt:     data.UpdatedAt,
+
+		LessonCount:    lessonCount,
+		SubLessonCount: subLessonCount,
 	}
 
 	return responseDto, nil

@@ -3,7 +3,7 @@
 package dto
 
 import (
-	"jk-api/internal/database/models"
+	"time"
 )
 
 // CreateMCourseDto is used when creating a new MCourse.
@@ -24,9 +24,42 @@ type UpdateMCourseDto struct {
 
 // MCourseResponseDto represents a detailed view of MCourse with related data.
 type MCourseResponseDto struct {
-	models.MCourse
+	ID             int64      `json:"id"`
+	CourseName     string    `json:"course_name"`
+	Description    string    `json:"description"`
+	ImgThumbnail   string    `json:"img_thumbnail"`
+	Published      bool      `json:"published"`
+	IsActive       bool      `json:"isactive"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
+
+	LessonCount    int `json:"lessonCount"`
+	SubLessonCount int `json:"subLessonCount"`
 }
 
+type MCourseDetailResponse struct {
+	ID           int64                  `json:"id"`
+	CourseName   string                 `json:"course_name"`
+	Description  string                `json:"description"`
+	ImgThumbnail string                `json:"img_thumbnail"`
+	Published    bool                   `json:"published"`
+	IsActive     bool                   `json:"isactive"`
+	CreatedAt    time.Time              `json:"created_at"`
+	UpdatedAt    time.Time              `json:"updated_at"`
+	Levels       []MCourseLevelResponse `json:"levels"`
+}
+
+type MCourseLevelResponse struct {
+	ID             int64      `json:"id"`
+	LevelName      string     `json:"level_name"`
+	Description    string    `json:"description"`
+	IsActive       bool       `json:"isactive"`
+	CreatedAt      time.Time  `json:"created_at"`
+	UpdatedAt      time.Time  `json:"updated_at"`
+	LessonCount    int        `json:"lessonCount"`
+	SubLessonCount int        `json:"subLessonCount"`
+	IsLocked       bool       `json:"isLocked"`
+}
 type MCourseFilterDto struct {
 	Preload     bool
 	Sort        string
