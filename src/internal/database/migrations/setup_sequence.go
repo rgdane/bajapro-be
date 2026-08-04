@@ -27,6 +27,8 @@ func SetupSequenceTable(db *gorm.DB) error {
 		"t_code_answer_seq": "t_code_answer",
 		"t_code_history_logs_seq": "t_code_history_logs",
 		"t_wondering_score_seq": "t_wondering_score",
+		"t_generation_history_seq": "t_generation_history",
+		"leaderboard_seq": "leaderboard",
 
 	}
 

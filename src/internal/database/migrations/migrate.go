@@ -36,8 +36,8 @@ func Migrate() {
 		&models.TCodeHistoryLogs{},
 		&models.EssayQuestion{},
 		&models.TEssayAnswer{},
-		&models.TGenerationHistory{},
 		&models.Permission{},
+		&models.Leaderboard{},
 	)
 
 	// if err := NotificationPriorityEnum(db); err != nil {
