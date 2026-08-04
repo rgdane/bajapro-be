@@ -14,7 +14,7 @@ type CreateMLevelDto struct {
 type UpdateMLevelDto struct {
 	LevelName *string `json:"level_name"`
 	Description *string `json:"description"`
-	IsActive *bool `json:"is_active"`
+	IsActive *bool `json:"isactive"`
 }
 
 type MLevelFilterDto struct {

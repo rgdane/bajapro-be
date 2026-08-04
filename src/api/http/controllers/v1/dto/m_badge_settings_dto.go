@@ -20,7 +20,7 @@ type UpdateMBadgeSettingsDto struct {
 	Image      *string   `json:"image"`
 	MinScore   *int      `json:"min_score"`
 	MaxScore   *int      `json:"max_score"`
-	IsActive   *bool     `json:"is_active"`
+	IsActive   *bool     `json:"isactive"`
 }
 
 // MBadgeSettingsResponseDto represents a detailed view of MBadgeSettings with related data.

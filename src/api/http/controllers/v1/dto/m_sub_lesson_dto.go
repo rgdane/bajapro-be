@@ -18,7 +18,7 @@ type UpdateMSubLessonDto struct {
 	LessonID *int64 `json:"lesson_id"`
     Title *string `json:"title"`
 	OrderPosition *int `json:"order_position"`
-	IsActive *bool `json:"is_active"`
+	IsActive *bool `json:"isactive"`
 }
 
 type BulkCreateMSubLessonsDto struct {

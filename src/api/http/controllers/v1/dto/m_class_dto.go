@@ -19,7 +19,7 @@ type UpdateMClassDto struct {
 	ClassName  *string    `json:"class_name"`
 	SchoolName *string    `json:"school_name"`
 	ClassCode  *string    `json:"class_code"`
-	IsActive   *bool      `json:"is_active"`
+	IsActive   *bool      `json:"isactive"`
 	DeletedAt  *time.Time `json:"deleted_at"`
 	Teachers   *[]int64   `json:"teachers"`
 	Students   *[]int64   `json:"students"`
