@@ -28,4 +28,10 @@ type MLessonRepository interface {
 	FindMLesson() ([]models.MLesson, error)
 	FindMLessonByID(id int64) (*models.MLesson, error)
 	FindMLessonsByIDs(ids []int64) ([]*models.MLesson, error)
+
+	CountSubLesson(CourseID int64) (int64, error)
+	FindCourseMaterialTree(
+	courseID int64,
+	levelID int64,
+) ([]models.MLesson, error)
 }

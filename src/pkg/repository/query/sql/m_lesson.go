@@ -172,3 +172,64 @@ func (repo *mLessonRepository) FindMLessonsByIDs(ids []int64) ([]*models.MLesson
 		return db.Where("id IN ?", ids)
 	}).FindAllPtr()
 }
+
+func (repo *mLessonRepository) CountSubLesson(courseID int64) (int64, error) {
+    var count int64
+
+    err := repo.db.
+        Model(&models.MSubLesson{}).
+        Joins("JOIN m_lessons ON m_lessons.id = m_sub_lessons.lesson_id").
+        Where("m_lessons.course_id = ?", courseID).
+        Where("m_lessons.isactive = ?", true).
+        Where("m_sub_lessons.isactive = ?", true).
+        Count(&count).Error
+
+    return count, err
+}
+
+func (repo *mLessonRepository) FindCourseMaterialTree(
+	courseID int64,
+	levelID int64,
+) ([]models.MLesson, error) {
+	var lessons []models.MLesson
+
+	err := repo.db.
+		Where(
+			"course_id = ? AND level_id = ? AND isactive = ?",
+			courseID,
+			levelID,
+			true,
+		).
+		Order("position ASC").
+		Preload(
+			"SubLessons",
+			func(db *gorm.DB) *gorm.DB {
+				return db.
+					Where("isactive = ?", true).
+					Order("order_position ASC")
+			},
+		).
+		Preload(
+			"SubLessons.Materials",
+			func(db *gorm.DB) *gorm.DB {
+				return db.
+					Where("isactive = ?", true).
+					Order("content_position ASC")
+			},
+		).
+		Preload(
+			"SubLessons.CodeQuestions",
+			func(db *gorm.DB) *gorm.DB {
+				return db.
+					Where("isactive = ?", true)
+			},
+		).
+		Find(&lessons).
+		Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return lessons, nil
+}

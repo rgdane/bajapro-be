@@ -146,4 +146,18 @@ func (repo *mLevelRepository) FindMLevelByID(id int64) (*models.MLevel, error) {
 	return repo.getQueryBuilder().FindByID(id)
 }
 
+func (repo *mLevelRepository) FindActiveLevels() ([]models.MLevel, error) {
+	var levels []models.MLevel
 
+	err := repo.db.
+		Where("isactive = ?", true).
+		Order("id ASC").
+		Find(&levels).
+		Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return levels, nil
+}

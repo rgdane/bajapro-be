@@ -23,4 +23,5 @@ type MLevelRepository interface {
 
 	FindMLevel() ([]models.MLevel, error)
 	FindMLevelByID(id int64) (*models.MLevel, error)
+	FindActiveLevels() ([]models.MLevel, error)
 }

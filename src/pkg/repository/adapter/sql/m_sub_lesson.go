@@ -28,4 +28,6 @@ type MSubLessonRepository interface {
 	FindMSubLessons() ([]models.MSubLesson, error)
 	FindMSubLessonByID(id int64) (*models.MSubLesson, error)
 	FindMSubLessonsByIDs(ids []int64) ([]*models.MSubLesson, error)
+
+	CountActive() (int64, error)
 }

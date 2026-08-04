@@ -153,6 +153,10 @@ func (qb *QueryBuilder[T]) UpdateByID(id int64, updates map[string]interface{}) 
 	return &model, nil
 }
 
+func (qb *QueryBuilder[T]) Save(model *T) error {
+	return qb.db.Save(model).Error
+}
+
 func (qb *QueryBuilder[T]) UpdateMany(ids []int64, updates map[string]interface{}) (model *T, err error) {
 	db := qb.db
 	if qb.unscoped {

@@ -172,3 +172,16 @@ func (repo *mSubLessonRepository) FindMSubLessonsByIDs(ids []int64) ([]*models.M
 		return db.Where("id IN ?", ids)
 	}).FindAllPtr()
 }
+
+func (repo *mSubLessonRepository) CountActive() (int64, error) {
+	var count int64
+	err := repo.db.
+		Model(&models.MSubLesson{}).
+		Where("isactive = ?", true).
+		Count(&count).
+		Error
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}

@@ -145,3 +145,9 @@ func (repo *mBadgeSettingsRepository) FindMBadgeSettings() ([]models.MBadgeSetti
 func (repo *mBadgeSettingsRepository) FindMBadgeSettingsByID(id int64) (*models.MBadgeSettings, error) {
 	return repo.getQueryBuilder().FindByID(id)
 }
+
+func (repo *mBadgeSettingsRepository) FindMBadgeByScore(score int) (*models.MBadgeSettings, error) {
+	return repo.getQueryBuilder().WithWhere(func(db *gorm.DB) *gorm.DB {
+		return db.Where("min_score <= ? AND max_score >= ?", score, score)
+	}).FindOne()
+}

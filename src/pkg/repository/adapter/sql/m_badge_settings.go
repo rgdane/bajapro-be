@@ -25,4 +25,5 @@ type MBadgeSettingsRepository interface {
 
 	FindMBadgeSettings() ([]models.MBadgeSettings, error)
 	FindMBadgeSettingsByID(id int64) (*models.MBadgeSettings, error)
+	FindMBadgeByScore(score int) (*models.MBadgeSettings, error)
 }
