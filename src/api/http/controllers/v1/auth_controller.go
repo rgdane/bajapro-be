@@ -6,7 +6,6 @@ import (
 	"jk-api/api/http/controllers/v1/handlers"
 	"jk-api/api/http/presenters"
 	"jk-api/internal/container"
-	"strings"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -78,40 +77,11 @@ func Login(cn *container.AppContainer) fiber.Handler {
 
 func Logout(cn *container.AppContainer) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-
-		// Prioritas ambil dari cookie
-		tokenString := c.Cookies("access_token")
-
-		// Fallback jika masih memakai Authorization
-		if tokenString == "" {
-			authHeader := c.Get("Authorization")
-
-			if authHeader == "" {
-				return presenters.ErrorResponse(
-					c,
-					fiber.StatusUnauthorized,
-					errors.New("missing access token"),
-				)
-			}
-
-			tokenParts := strings.Split(authHeader, " ")
-			if len(tokenParts) != 2 || tokenParts[0] != "Bearer" {
-				return presenters.ErrorResponse(
-					c,
-					fiber.StatusUnauthorized,
-					errors.New("invalid authorization header"),
-				)
-			}
-
-			tokenString = tokenParts[1]
+		refreshToken := c.Cookies("refresh_token")
+		if refreshToken != "" {
+			_ = cn.AuthHandler.Logout(refreshToken)
 		}
 
-		// Logout di service
-		if err := cn.AuthHandler.Logout(tokenString); err != nil {
-			return presenters.ErrorResponse(c, fiber.StatusInternalServerError, err)
-		}
-
-		// Hapus cookie access token
 		c.Cookie(&fiber.Cookie{
 			Name:     "access_token",
 			Value:    "",
@@ -121,7 +91,6 @@ func Logout(cn *container.AppContainer) fiber.Handler {
 			SameSite: "Lax",
 		})
 
-		// Hapus cookie refresh token
 		c.Cookie(&fiber.Cookie{
 			Name:     "refresh_token",
 			Value:    "",

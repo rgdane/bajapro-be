@@ -18,5 +18,5 @@ func AuthRoutes(router fiber.Router, c *container.AppContainer) {
 	app.Post("/login", controllers.Login(c))
 	app.Post("/register", controllers.Register(c))
 	app.Post("/refresh", controllers.RefreshToken(c))
-	app.Post("/logout", controllers.Logout(c), middleware.JWTMiddleware())
+	app.Post("/logout", middleware.JWTMiddleware(), controllers.Logout(c))
 }
