@@ -25,4 +25,5 @@ type MClassRepository interface {
 
 	FindMClass() ([]models.MClass, error)
 	FindMClassByID(id int64) (*models.MClass, error)
+	FindMClassByCode(code string) (*models.MClass, error)
 }

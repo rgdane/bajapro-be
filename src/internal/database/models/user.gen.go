@@ -18,6 +18,8 @@ type User struct {
 	Name              string         `gorm:"column:name;size:255;not null;index:idx_users_name" json:"name"`
 	Email             string         `gorm:"column:email;size:255;not null;unique;index:idx_users_email" json:"email"`
 	Password          string         `gorm:"column:password;not null" json:"password"`
+	Nip               *string        `gorm:"column:nip;size:50" json:"nip"`
+	SchoolInstance   *string        `gorm:"column:school_instance;size:255" json:"school_instance"`
 	AvatarUrl         *string        `gorm:"column:avatar_url;size:255" json:"avatar_url"`
 	IsPasswordDefault bool           `gorm:"column:is_password_default;default:true;" json:"is_password_default"`
 	IsApprovedByAdmin   bool           `gorm:"column:is_approved_by_admin;default:false;" json:"is_approved_by_admin"`

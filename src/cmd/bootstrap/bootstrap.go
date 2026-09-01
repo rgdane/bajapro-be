@@ -14,10 +14,14 @@ func Setup() {
 	// InitNeo4j()
 
 	//runMigrate()
+	//runSeeder()
 	InitFiber()
 }
 
 func runMigrate() {
 	migrations.Migrate()
+}
+
+func runSeeder() {
 	seeders.InitSeeder(config.DB)
 }

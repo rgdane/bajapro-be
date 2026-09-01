@@ -21,17 +21,19 @@ type UserResponse struct {
 }
 
 type RegisterRequest struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Role     string `json:"role"` // "student" | "teacher"
+	Name           string  `json:"name"`
+	Email          string  `json:"email"`
+	Password       string  `json:"password"`
+	RoleID         int64   `json:"role_id"` // "student" | "teacher"
+	NIP            *string `json:"nip,omitempty"`
+	SchoolInstance *string `json:"school_instance,omitempty"`
 }
 
 type ProfileResponse struct {
-	ID                int64         `json:"id"`
-	Name              string        `json:"name"`
-	Email             string        `json:"email"`
-	IsPasswordDefault bool          `json:"is_password_default"`
-	HasRoles          []models.Role `json:"has_roles"`
+	ID                int64          `json:"id"`
+	Name              string         `json:"name"`
+	Email             string         `json:"email"`
+	IsPasswordDefault bool           `json:"is_password_default"`
+	HasRoles          []models.Role  `json:"has_roles"`
 	HasClass          *models.MClass `json:"class"`
 }

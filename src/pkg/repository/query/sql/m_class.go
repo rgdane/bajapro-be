@@ -145,3 +145,10 @@ func (repo *mClassRepository) FindMClass() ([]models.MClass, error) {
 func (repo *mClassRepository) FindMClassByID(id int64) (*models.MClass, error) {
 	return repo.getQueryBuilder().FindByID(id)
 }
+
+func (repo *mClassRepository) FindMClassByCode(code string) (*models.MClass, error) {
+	return repo.getQueryBuilder().
+		WithWhere(func(db *gorm.DB) *gorm.DB {
+			return db.Where("class_code = ?", code)
+		}).FindOne()
+}

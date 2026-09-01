@@ -79,26 +79,17 @@ func (s *authService) Register(req *dto.RegisterRequest) (*models.User, error) {
 		return nil, err
 	}
 
-	var roleID int64
-	var isApproved bool
-
-	switch req.Role {
-	case "teacher":
-		roleID = 2
-		isApproved = false // ❗ harus approval admin
-	case "student":
-		roleID = 3
-		isApproved = true
-	default:
-		return nil, fmt.Errorf("role tidak valid")
+	isApprovedByAdmin := true
+	if req.RoleID == 2 {
+		isApprovedByAdmin = false
 	}
 
 	user := models.User{
 		Name:              req.Name,
 		Email:             req.Email,
 		Password:          string(hashedPassword),
-		RoleID:            roleID,
-		IsApprovedByAdmin: isApproved,
+		RoleID:            req.RoleID,
+		IsApprovedByAdmin: isApprovedByAdmin,
 		IsActive:          true,
 	}
 
