@@ -68,7 +68,7 @@ func (h *AuthHandler) Register(req *dto.RegisterRequest) (*dto.LoginResponse, st
 	}
 
 	// ❗ kalau teacher belum approve → jangan kasih token
-	if user.RoleID == 2 && !user.IsApprovedByAdmin {
+	if user.RoleID == 2 && user.Approval == 0 {
 		return nil, "", fmt.Errorf("akun teacher menunggu approval admin")
 	}
 

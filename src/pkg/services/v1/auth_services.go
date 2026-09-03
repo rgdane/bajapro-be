@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"jk-api/api/http/controllers/v1/dto"
+	"jk-api/internal/config"
 	"jk-api/internal/database/models"
 	"jk-api/internal/errors/bcrypt_err"
 	"jk-api/internal/errors/gorm_err"
@@ -61,8 +62,10 @@ func (s *authService) Login(email, password string) (*models.User, error) {
 	}
 
 	// ❌ Cek approval teacher
-	if user.HasRoles[0].ID == 2 && !user.IsApprovedByAdmin {
+	if user.HasRoles[0].ID == 2 && user.Approval == 0 {
 		return nil, fmt.Errorf("akun teacher belum di-approve admin")
+	} else if user.HasRoles[0].ID == 2 && user.Approval == 2 {
+		return nil, fmt.Errorf("akun teacher ditolak admin")
 	}
 
 	// ❌ Cek password
@@ -74,23 +77,36 @@ func (s *authService) Login(email, password string) (*models.User, error) {
 }
 
 func (s *authService) Register(req *dto.RegisterRequest) (*models.User, error) {
+	// Validasi role di trust boundary: hanya student/teacher yang boleh self-register,
+	// supaya role_id dari body request tidak bisa dipakai jadi super/admin.
+	var role models.Role
+	if err := config.DB.
+		Where("id = ? AND name IN ?", req.RoleID, []string{"student", "teacher"}).
+		First(&role).Error; err != nil {
+		return nil, fmt.Errorf("role_id tidak valid untuk registrasi")
+	}
+
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
 	}
 
-	isApprovedByAdmin := true
-	if req.RoleID == 2 {
-		isApprovedByAdmin = false
+	approval := int8(1) // student langsung disetujui
+	if role.Name == "teacher" {
+		approval = 0 // teacher menunggu approval admin
 	}
 
 	user := models.User{
-		Name:              req.Name,
-		Email:             req.Email,
-		Password:          string(hashedPassword),
-		RoleID:            req.RoleID,
-		IsApprovedByAdmin: isApprovedByAdmin,
-		IsActive:          true,
+		Name:           req.Name,
+		Email:          req.Email,
+		Password:       string(hashedPassword),
+		RoleID:         req.RoleID,
+		Nip:            req.NIP,
+		SchoolInstance: req.SchoolInstance,
+		Approval:       approval,
+		IsActive:       true,
+		// GORM many2many: baris user_has_roles ikut di-insert bareng user (satu transaksi).
+		HasRoles: []models.Role{role},
 	}
 
 	createdUser, err := s.repo.InsertUser(&user)

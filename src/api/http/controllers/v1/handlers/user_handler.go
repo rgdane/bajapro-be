@@ -94,6 +94,9 @@ func (h *UserHandler) GetAllUsersHandler(filter dto.UserFilterDto) ([]models.Use
 
 	var total int64
 	db := h.Service.GetDB()
+	if filter.RoleID != 0 {
+		db = db.Joins("JOIN user_has_roles ON user_has_roles.user_id = users.id").Where("user_has_roles.role_id = ?", filter.RoleID)
+	}
 	if filter.Name != "" {
 		db = db.Where("name ILIKE ?", "%"+filter.Name+"%")
 	}

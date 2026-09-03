@@ -34,21 +34,21 @@ func SeedUsers(db *gorm.DB) error {
 		Email    string
 		Role     models.Role
 		ClassID  *int64
-		Approved bool
+		Approval int8
 	}{
 		{
 			Name:     "Teacher 1",
 			Email:    "teacher@mail.com",
 			Role:     teacherRole,
 			ClassID:  nil,
-			Approved: false,
+			Approval: 0,
 		},
 		{
 			Name:     "Student 1",
 			Email:    "student@mail.com",
 			Role:     studentRole,
 			ClassID:  &studentClassID,
-			Approved: true,
+			Approval: 1,
 		},
 	}
 
@@ -64,7 +64,7 @@ func SeedUsers(db *gorm.DB) error {
 				Email:             item.Email,
 				ClassID:           item.ClassID,
 				Password:          string(password),
-				IsApprovedByAdmin: item.Approved,
+				Approval:          item.Approval,
 				IsActive:          true,
 				CreatedAt:         time.Now(),
 				UpdatedAt:         time.Now(),
@@ -82,7 +82,7 @@ func SeedUsers(db *gorm.DB) error {
 			if err := db.Model(&user).Updates(map[string]any{
 				"name":                   item.Name,
 				"class_id":               item.ClassID,
-				"is_approved_by_admin":   item.Approved,
+				"approval":               item.Approval,
 				"isactive":               true,
 				"updated_at":             time.Now(),
 			}).Error; err != nil {

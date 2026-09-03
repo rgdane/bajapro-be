@@ -22,7 +22,7 @@ type User struct {
 	SchoolInstance   *string        `gorm:"column:school_instance;size:255" json:"school_instance"`
 	AvatarUrl         *string        `gorm:"column:avatar_url;size:255" json:"avatar_url"`
 	IsPasswordDefault bool           `gorm:"column:is_password_default;default:true;" json:"is_password_default"`
-	IsApprovedByAdmin   bool           `gorm:"column:is_approved_by_admin;default:false;" json:"is_approved_by_admin"`
+	Approval 		  int8           `gorm:"column:approval;default:0;" json:"approval" description:"0=Pending, 1=Disetujui, 2=Ditolak"`
 	IsActive          bool           `gorm:"column:isactive;default:true" json:"isactive"`
 	CreatedAt         time.Time      `gorm:"column:created_at;autoCreateTime" json:"created_at"`
 	UpdatedAt         time.Time      `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`

@@ -16,6 +16,7 @@ import (
 func GetUsers(cn *container.AppContainer) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		squadID, _ := helper.ParseQueryInt64(c, "squad_id")
+		roleID, _ := helper.ParseQueryInt64(c, "role_id")
 		cursor, _ := helper.ParseQueryInt64(c, "cursor")
 		limit, _ := helper.ParseQueryInt64(c, "limit")
 		name := c.Query("name")
@@ -25,6 +26,7 @@ func GetUsers(cn *container.AppContainer) fiber.Handler {
 
 		filter := dto.UserFilterDto{
 			SquadID:     squadID,
+			RoleID:      roleID,
 			Preload:     c.Query("preload", "false") == "true",
 			Cursor:      cursor,
 			Limit:       limit,

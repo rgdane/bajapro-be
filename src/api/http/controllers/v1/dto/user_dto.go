@@ -28,6 +28,7 @@ type UpdateUserDto struct {
 	RoleIDs           *[]int64   `json:"has_roles"`
 	IsPasswordDefault *bool      `json:"is_password_default"`
 	DeletedAt         *time.Time `json:"deleted_at"`
+	Approval          *int8      `json:"approval" description:"0=Pending, 1=Disetujui, 2=Ditolak"`
 }
 
 // UserResponseDto represents a detailed view of User with related data.
@@ -41,6 +42,7 @@ type BulkCreateUserDto struct {
 
 type UserFilterDto struct {
 	SquadID     int64
+	RoleID      int64
 	Preload     bool
 	Limit       int64
 	Cursor      int64

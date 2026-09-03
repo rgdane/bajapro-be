@@ -129,6 +129,12 @@ func (s *userService) GetAllUsers(filter dto.UserFilterDto) ([]models.User, erro
 			WithWhere("squad_members.squad_id = ?", filter.SquadID)
 	}
 
+	if filter.RoleID != 0 {
+		repo = repo.
+			WithJoins("JOIN user_has_roles ON user_has_roles.user_id = users.id").
+			WithWhere("user_has_roles.role_id = ?", filter.RoleID)
+	}
+
 	if filter.Preload {
 		repo = repo.WithPreloads("HasRoles", "HasClass", "TeachingClasses")
 	}

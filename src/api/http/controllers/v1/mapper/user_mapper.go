@@ -70,6 +70,9 @@ func UpdateUserDtoToModel(dto *dto.UpdateUserDto) (
 	if dto.IsPasswordDefault != nil {
 		payload["is_password_default"] = *dto.IsPasswordDefault
 	}
+	if dto.Approval != nil {
+		payload["approval"] = *dto.Approval
+	}
 
 	// if dto.TitleID != nil {
 	// 	payload["title_id"] = *dto.TitleID
