@@ -62,9 +62,9 @@ func (s *authService) Login(email, password string) (*models.User, error) {
 	}
 
 	// ❌ Cek approval teacher
-	if user.HasRoles[0].ID == 2 && user.Approval == 0 {
+	if len(user.HasRoles) > 0 && user.HasRoles[0].ID == 2 && user.Approval == 0 {
 		return nil, fmt.Errorf("akun teacher belum di-approve admin")
-	} else if user.HasRoles[0].ID == 2 && user.Approval == 2 {
+	} else if len(user.HasRoles) > 0 && user.HasRoles[0].ID == 2 && user.Approval == 2 {
 		return nil, fmt.Errorf("akun teacher ditolak admin")
 	}
 
