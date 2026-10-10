@@ -14,26 +14,38 @@ type LoginResponse struct {
 }
 
 type UserResponse struct {
-	ID       int64         `json:"id"`
-	Name     string        `json:"name"`
-	Email    string        `json:"email"`
-	HasRoles []models.Role `json:"has_roles"`
+	ID       int64  `json:"id"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Role     string `json:"role"`
+	SchoolID *int64 `json:"school_id,omitempty"`
+	ClassID  *int64 `json:"class_id,omitempty"`
 }
 
 type RegisterRequest struct {
-	Name           string  `json:"name"`
-	Email          string  `json:"email"`
-	Password       string  `json:"password"`
-	RoleID         int64   `json:"role_id"` // "student" | "teacher"
-	NIP            *string `json:"nip,omitempty"`
-	SchoolInstance *string `json:"school_instance,omitempty"`
+	Name               string  `json:"name"`
+	Email              string  `json:"email"`
+	Password           string  `json:"password"`
+	Role               string  `json:"role"` // "admin" | "teacher" | "student"
+	NIP                *string `json:"nip,omitempty"`
+	ClassCode          *string `json:"class_code,omitempty"`           // For student registration
+	SchoolID           *int64  `json:"school_id,omitempty"`            // For teacher registration with existing school
+	ProposedSchoolName *string `json:"proposed_school_name,omitempty"` // For teacher registration proposing new school
 }
 
 type ProfileResponse struct {
-	ID                int64          `json:"id"`
-	Name              string         `json:"name"`
-	Email             string         `json:"email"`
-	IsPasswordDefault bool           `json:"is_password_default"`
-	HasRoles          []models.Role  `json:"has_roles"`
-	HasClass          *models.MClass `json:"class"`
+	ID                int64           `json:"id"`
+	Name              string          `json:"name"`
+	Email             string          `json:"email"`
+	IsPasswordDefault bool            `json:"is_password_default"`
+	Role              string          `json:"role"`
+	SchoolID          *int64          `json:"school_id,omitempty"`
+	ClassID           *int64          `json:"class_id,omitempty"`
+	School            *models.MSchool `json:"school,omitempty"`
+	HasClass          *models.MClass  `json:"class,omitempty"`
+}
+
+type TeacherApprovalDecisionRequest struct {
+	Action        string  `json:"action"` // "approve" | "reject"
+	RejectionNote *string `json:"rejection_note,omitempty"`
 }

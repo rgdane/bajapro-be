@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"fmt"
 	"jk-api/api/http/controllers/v1/dto"
 	"jk-api/api/http/controllers/v1/mapper"
+	"jk-api/internal/database/models"
 	"jk-api/pkg/services/v1"
 )
 
@@ -17,7 +17,6 @@ func NewAuthHandler(service services.AuthService) *AuthHandler {
 
 func (h *AuthHandler) GetProfileHandler(token string) (*dto.ProfileResponse, error) {
 	user, err := h.AuthService.GetProfile(token)
-	fmt.Println(user)
 	if err != nil {
 		return nil, err
 	}
@@ -41,13 +40,11 @@ func (h *AuthHandler) Login(req *dto.LoginRequest) (*dto.LoginResponse, string, 
 		return nil, "", err
 	}
 
-	// 🔥 kirim ke response
 	data, err := mapper.AuthModelToDto(user, accessToken, refreshToken)
 	if err != nil {
 		return nil, "", err
 	}
 
-	// 👉 tambahin refresh token ke DTO
 	data.RefreshToken = refreshToken
 
 	return data, accessToken, nil
@@ -67,9 +64,17 @@ func (h *AuthHandler) Register(req *dto.RegisterRequest) (*dto.LoginResponse, st
 		return nil, "", err
 	}
 
-	// ❗ kalau teacher belum approve → jangan kasih token
-	if user.RoleID == 2 && user.Approval == 0 {
-		return nil, "", fmt.Errorf("akun teacher menunggu approval admin")
+	// Kalau teacher belum approve -> kirim pesan response tapi tanpa access token
+	if user.Role == models.RoleTeacher && user.Approval == 0 {
+		return &dto.LoginResponse{
+			User: dto.UserResponse{
+				ID:       user.ID,
+				Name:     user.Name,
+				Email:    user.Email,
+				Role:     string(user.Role),
+				SchoolID: user.SchoolID,
+			},
+		}, "", nil
 	}
 
 	accessToken, err := h.AuthService.GenerateAccessToken(user)
@@ -88,4 +93,12 @@ func (h *AuthHandler) Register(req *dto.RegisterRequest) (*dto.LoginResponse, st
 	}
 
 	return data, accessToken, nil
+}
+
+func (h *AuthHandler) GetPendingTeacherRequestsHandler() ([]models.RegistrationRequest, error) {
+	return h.AuthService.GetPendingTeacherRequests()
+}
+
+func (h *AuthHandler) ProcessTeacherRequestHandler(requestID int64, adminID int64, decision dto.TeacherApprovalDecisionRequest) error {
+	return h.AuthService.ProcessTeacherRequest(requestID, adminID, decision)
 }

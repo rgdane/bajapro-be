@@ -2,7 +2,6 @@ package services
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"time"
 
@@ -16,6 +15,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type AuthService interface {
@@ -27,11 +27,13 @@ type AuthService interface {
 	GenerateRefreshToken(user *models.User) (string, error)
 	RefreshToken(token string) (string, error)
 	DecodeToken(token string) (jwt.MapClaims, error)
+	GetPendingTeacherRequests() ([]models.RegistrationRequest, error)
+	ProcessTeacherRequest(requestID int64, adminID int64, decision dto.TeacherApprovalDecisionRequest) error
 }
 
 type authService struct {
-	repo sql.UserRepository
-	refreshTokenRepo  sql.RefreshTokenRepository
+	repo             sql.UserRepository
+	refreshTokenRepo sql.RefreshTokenRepository
 }
 
 func NewAuthService(
@@ -39,22 +41,17 @@ func NewAuthService(
 	refreshRepo sql.RefreshTokenRepository,
 ) *authService {
 	return &authService{
-		repo: userRepo,
+		repo:             userRepo,
 		refreshTokenRepo: refreshRepo,
 	}
 }
 
 func (s *authService) Login(email, password string) (*models.User, error) {
-	user, err := s.repo.
-		WithPreloads("HasRoles.HasPermissions").
-		FindUserByEmail(email)
+	user, err := s.repo.FindUserByEmail(email)
 
 	if err != nil {
 		return nil, gorm_err.TranslateGormError(err)
 	}
-
-	// 🔍 DEBUG (optional)
-	log.Printf("User ID: %d, Roles count: %d", user.ID, len(user.HasRoles))
 
 	// ❌ Cek user aktif
 	if !user.IsActive {
@@ -62,9 +59,9 @@ func (s *authService) Login(email, password string) (*models.User, error) {
 	}
 
 	// ❌ Cek approval teacher
-	if len(user.HasRoles) > 0 && user.HasRoles[0].ID == 2 && user.Approval == 0 {
+	if user.Role == models.RoleTeacher && user.Approval == 0 {
 		return nil, fmt.Errorf("akun teacher belum di-approve admin")
-	} else if len(user.HasRoles) > 0 && user.HasRoles[0].ID == 2 && user.Approval == 2 {
+	} else if user.Role == models.RoleTeacher && user.Approval == 2 {
 		return nil, fmt.Errorf("akun teacher ditolak admin")
 	}
 
@@ -78,12 +75,10 @@ func (s *authService) Login(email, password string) (*models.User, error) {
 
 func (s *authService) Register(req *dto.RegisterRequest) (*models.User, error) {
 	// Validasi role di trust boundary: hanya student/teacher yang boleh self-register,
-	// supaya role_id dari body request tidak bisa dipakai jadi super/admin.
-	var role models.Role
-	if err := config.DB.
-		Where("id = ? AND name IN ?", req.RoleID, []string{"student", "teacher"}).
-		First(&role).Error; err != nil {
-		return nil, fmt.Errorf("role_id tidak valid untuk registrasi")
+	// supaya role dari body request tidak bisa dipakai jadi super/admin.
+	role := models.UserRole(req.Role)
+	if role != models.RoleStudent && role != models.RoleTeacher {
+		return nil, fmt.Errorf("role tidak valid untuk registrasi")
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
@@ -91,36 +86,215 @@ func (s *authService) Register(req *dto.RegisterRequest) (*models.User, error) {
 		return nil, err
 	}
 
-	approval := int8(1) // student langsung disetujui
-	if role.Name == "teacher" {
-		approval = 0 // teacher menunggu approval admin
+	if role == models.RoleStudent {
+		if req.ClassCode == nil || *req.ClassCode == "" {
+			return nil, fmt.Errorf("kode kelas wajib diisi untuk registrasi student")
+		}
+
+		var class models.MClass
+		if err := config.DB.Where("class_code = ?", *req.ClassCode).First(&class).Error; err != nil {
+			return nil, fmt.Errorf("kode kelas tidak ditemukan")
+		}
+
+		if !class.IsActive {
+			return nil, fmt.Errorf("kelas tidak aktif")
+		}
+
+		var school models.MSchool
+		if err := config.DB.Where("id = ?", class.SchoolID).First(&school).Error; err != nil {
+			return nil, fmt.Errorf("sekolah tidak ditemukan")
+		}
+
+		if !school.IsActive {
+			return nil, fmt.Errorf("sekolah tidak aktif")
+		}
+
+		if class.TeacherID == nil {
+			return nil, fmt.Errorf("kelas belum memiliki pengajar yang valid")
+		}
+
+		var createdUser models.User
+		err = config.DB.Transaction(func(tx *gorm.DB) error {
+			createdUser = models.User{
+				Name:     req.Name,
+				Email:    req.Email,
+				Password: string(hashedPassword),
+				Role:     models.RoleStudent,
+				ClassID:  &class.ID,
+				SchoolID: &class.SchoolID,
+				Approval: 1,
+				IsActive: true,
+			}
+			return tx.Create(&createdUser).Error
+		})
+
+		if err != nil {
+			return nil, gorm_err.TranslateGormError(err)
+		}
+
+		createdUser.Password = ""
+		return &createdUser, nil
 	}
 
-	user := models.User{
-		Name:           req.Name,
-		Email:          req.Email,
-		Password:       string(hashedPassword),
-		RoleID:         req.RoleID,
-		Nip:            req.NIP,
-		SchoolInstance: req.SchoolInstance,
-		Approval:       approval,
-		IsActive:       true,
-		// GORM many2many: baris user_has_roles ikut di-insert bareng user (satu transaksi).
-		HasRoles: []models.Role{role},
+	// Alur Registrasi Teacher
+	if req.SchoolID == nil && (req.ProposedSchoolName == nil || *req.ProposedSchoolName == "") {
+		return nil, fmt.Errorf("sekolah atau usulan nama sekolah baru wajib disertakan")
 	}
 
-	createdUser, err := s.repo.InsertUser(&user)
+	if req.SchoolID != nil {
+		var school models.MSchool
+		if err := config.DB.Where("id = ? AND isactive = true", *req.SchoolID).First(&school).Error; err != nil {
+			return nil, fmt.Errorf("sekolah tidak ditemukan atau tidak aktif")
+		}
+	}
+
+	var createdUser models.User
+	err = config.DB.Transaction(func(tx *gorm.DB) error {
+		createdUser = models.User{
+			Name:     req.Name,
+			Email:    req.Email,
+			Password: string(hashedPassword),
+			Role:     models.RoleTeacher,
+			Nip:      req.NIP,
+			SchoolID: req.SchoolID,
+			Approval: 0, // Menunggu approval admin
+			IsActive: true,
+		}
+
+		if err := tx.Create(&createdUser).Error; err != nil {
+			return err
+		}
+
+		regReq := models.RegistrationRequest{
+			Name:     req.Name,
+			Email:    req.Email,
+			Password: string(hashedPassword),
+			Nip:      req.NIP,
+			Status:   "pending",
+		}
+		if err := tx.Create(&regReq).Error; err != nil {
+			return err
+		}
+
+		regSchool := models.RegistrationRequestSchool{
+			RegistrationRequestID: regReq.ID,
+			ExistingSchoolID:      req.SchoolID,
+			ProposedSchoolName:    req.ProposedSchoolName,
+			Status:                "pending",
+		}
+		if err := tx.Create(&regSchool).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+
 	if err != nil {
 		return nil, gorm_err.TranslateGormError(err)
 	}
 
-	return createdUser, nil
+	createdUser.Password = ""
+	return &createdUser, nil
+}
+
+func (s *authService) GetPendingTeacherRequests() ([]models.RegistrationRequest, error) {
+	var requests []models.RegistrationRequest
+	err := config.DB.
+		Preload("School").
+		Preload("School.ExistingSchool").
+		Where("status = ?", "pending").
+		Find(&requests).Error
+	if err != nil {
+		return nil, gorm_err.TranslateGormError(err)
+	}
+	return requests, nil
+}
+
+func (s *authService) ProcessTeacherRequest(requestID int64, adminID int64, decision dto.TeacherApprovalDecisionRequest) error {
+	return config.DB.Transaction(func(tx *gorm.DB) error {
+		var regReq models.RegistrationRequest
+		if err := tx.Preload("School").Where("id = ?", requestID).First(&regReq).Error; err != nil {
+			return fmt.Errorf("permohonan registrasi tidak ditemukan")
+		}
+
+		if regReq.Status != "pending" {
+			return fmt.Errorf("permohonan registrasi sudah diproses sebelumnya")
+		}
+
+		var teacher models.User
+		if err := tx.Where("email = ?", regReq.Email).First(&teacher).Error; err != nil {
+			return fmt.Errorf("akun guru untuk permohonan ini tidak ditemukan")
+		}
+
+		if decision.Action == "approve" {
+			var schoolID int64
+			if regReq.School != nil && regReq.School.ProposedSchoolName != nil && *regReq.School.ProposedSchoolName != "" {
+				newSchool := models.MSchool{
+					SchoolName: *regReq.School.ProposedSchoolName,
+					IsActive:   true,
+				}
+				if err := tx.Create(&newSchool).Error; err != nil {
+					return fmt.Errorf("gagal membuat data sekolah baru: %w", err)
+				}
+				schoolID = newSchool.ID
+			} else if regReq.School != nil && regReq.School.ExistingSchoolID != nil {
+				schoolID = *regReq.School.ExistingSchoolID
+			}
+
+			if schoolID != 0 {
+				if err := tx.Model(&teacher).Updates(map[string]interface{}{
+					"approval":  1,
+					"school_id": schoolID,
+				}).Error; err != nil {
+					return err
+				}
+			} else {
+				if err := tx.Model(&teacher).Update("approval", 1).Error; err != nil {
+					return err
+				}
+			}
+
+			if err := tx.Model(&regReq).Updates(map[string]interface{}{
+				"status":      "approved",
+				"reviewed_by": adminID,
+			}).Error; err != nil {
+				return err
+			}
+
+			if regReq.School != nil {
+				if err := tx.Model(regReq.School).Update("status", "approved").Error; err != nil {
+					return err
+				}
+			}
+		} else if decision.Action == "reject" {
+			if err := tx.Model(&teacher).Update("approval", 2).Error; err != nil {
+				return err
+			}
+
+			if err := tx.Model(&regReq).Updates(map[string]interface{}{
+				"status":         "rejected",
+				"reviewed_by":    adminID,
+				"rejection_note": decision.RejectionNote,
+			}).Error; err != nil {
+				return err
+			}
+
+			if regReq.School != nil {
+				if err := tx.Model(regReq.School).Update("status", "rejected").Error; err != nil {
+					return err
+				}
+			}
+		} else {
+			return fmt.Errorf("aksi keputusan tidak valid, harus 'approve' atau 'reject'")
+		}
+
+		return nil
+	})
 }
 
 func (s *authService) Logout(refreshToken string) error {
 	return s.refreshTokenRepo.DeleteByToken(refreshToken)
 }
-
 
 func (s *authService) GetProfile(token string) (user *models.User, err error) {
 	claims, err := s.DecodeToken(token)
@@ -132,7 +306,7 @@ func (s *authService) GetProfile(token string) (user *models.User, err error) {
 	if !ok {
 		return nil, err
 	}
-	user, err = s.repo.WithPreloads("HasRoles.HasPermissions", "HasClass").FindUserByID(int64(userID))
+	user, err = s.repo.WithPreloads("HasClass", "School").FindUserByID(int64(userID))
 	if err != nil {
 		return nil, err
 	}
@@ -140,23 +314,11 @@ func (s *authService) GetProfile(token string) (user *models.User, err error) {
 }
 
 func (s *authService) GenerateAccessToken(user *models.User) (string, error) {
-	var roles []string
-	var permissions []string
-
-	for _, role := range user.HasRoles {
-		roles = append(roles, role.Name)
-
-		for _, perm := range role.HasPermissions {
-			permissions = append(permissions, perm.Name)
-		}
-	}
-
 	claims := jwt.MapClaims{
-		"user_id":    user.ID,
-		"name":       user.Name,
-		"roles":      roles,
-		"permissions": permissions,
-		"exp":        time.Now().Add(7 * 24 * time.Hour).Unix(),
+		"user_id": user.ID,
+		"name":    user.Name,
+		"role":    string(user.Role),
+		"exp":     time.Now().Add(7 * 24 * time.Hour).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -172,7 +334,6 @@ func (s *authService) GenerateRefreshToken(user *models.User) (string, error) {
 		ExpiresAt: time.Now().Add(7 * 24 * time.Hour),
 		CreatedAt: time.Now(),
 	}
-	
 
 	_, err := s.refreshTokenRepo.Insert(&refresh)
 	if err != nil {
@@ -209,4 +370,3 @@ func (s *authService) DecodeToken(token string) (jwt.MapClaims, error) {
 	})
 	return claims, err
 }
-

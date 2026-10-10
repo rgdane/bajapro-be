@@ -6,6 +6,7 @@ import (
 	"jk-api/api/http/controllers/v1/handlers"
 	"jk-api/api/http/presenters"
 	"jk-api/internal/container"
+	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -54,7 +55,7 @@ func Login(cn *container.AppContainer) fiber.Handler {
 			Name:     "access_token",
 			Value:    result.AccessToken,
 			HTTPOnly: true,
-			Secure:   false, // ubah menjadi true jika sudah HTTPS
+			Secure:   false,
 			SameSite: "Lax",
 			Path:     "/",
 			MaxAge:   60 * 60, // 1 jam
@@ -127,11 +128,46 @@ func Register(cn *container.AppContainer) fiber.Handler {
 		if err := c.BodyParser(&input); err != nil {
 			return presenters.ErrorResponseWithMessage(c, fiber.StatusBadRequest, "Invalid request")
 		}
-		dto, _, err := cn.AuthHandler.Register(&input)
+		resultDto, _, err := cn.AuthHandler.Register(&input)
+		if err != nil {
+			return presenters.ErrorResponse(c, fiber.StatusBadRequest, err)
+		}
+
+		return presenters.SuccessResponse(c, resultDto)
+	}
+}
+
+func GetPendingTeacherRequests(cn *container.AppContainer) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		requests, err := cn.AuthHandler.GetPendingTeacherRequestsHandler()
 		if err != nil {
 			return presenters.ErrorResponse(c, fiber.StatusInternalServerError, err)
 		}
+		return presenters.SuccessResponse(c, requests)
+	}
+}
 
-		return presenters.SuccessResponse(c, dto)
+func ProcessTeacherRequest(cn *container.AppContainer) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		id, err := strconv.ParseInt(c.Params("id"), 10, 64)
+		if err != nil {
+			return presenters.ErrorResponseWithMessage(c, fiber.StatusBadRequest, "ID permohonan tidak valid")
+		}
+
+		adminID, ok := c.Locals("user_id").(int64)
+		if !ok {
+			return presenters.ErrorResponseWithMessage(c, fiber.StatusUnauthorized, "Pengguna tidak terautentikasi")
+		}
+
+		var decision dto.TeacherApprovalDecisionRequest
+		if err := c.BodyParser(&decision); err != nil {
+			return presenters.ErrorResponseWithMessage(c, fiber.StatusBadRequest, "Format request keputusan tidak valid")
+		}
+
+		if err := cn.AuthHandler.ProcessTeacherRequestHandler(id, adminID, decision); err != nil {
+			return presenters.ErrorResponse(c, fiber.StatusBadRequest, err)
+		}
+
+		return presenters.SuccessResponseWithMessage(c, "Permohonan registrasi berhasil diproses", nil)
 	}
 }

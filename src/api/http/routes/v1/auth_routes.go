@@ -19,4 +19,9 @@ func AuthRoutes(router fiber.Router, c *container.AppContainer) {
 	app.Post("/register", controllers.Register(c))
 	app.Post("/refresh", controllers.RefreshToken(c))
 	app.Post("/logout", middleware.JWTMiddleware(), controllers.Logout(c))
+
+	// Admin teacher registration approval routes
+	admin := router.Group("admin/approval-pengajar", middleware.JWTMiddleware(), middleware.RequireRole("admin"))
+	admin.Get("/", controllers.GetPendingTeacherRequests(c))
+	admin.Post("/:id", controllers.ProcessTeacherRequest(c))
 }
