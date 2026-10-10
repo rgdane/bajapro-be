@@ -55,8 +55,7 @@ func JWTMiddleware() fiber.Handler {
 		}
 
 		c.Locals("name", claims["name"])
-		c.Locals("roles", toStringSlice(claims["roles"]))
-		c.Locals("permissions", toStringSlice(claims["permissions"]))
+		c.Locals("role", claims["role"])
 
 		return c.Next()
 	}

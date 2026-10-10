@@ -3,12 +3,10 @@ package seeders
 import "gorm.io/gorm"
 
 func InitSeeder(db *gorm.DB) {
-	SeedPermissions(db)
-	SeedRoles(db)
+	SeedSchools(db)
 	SeedClasses(db)
-	SeedAdmin(db)
 	SeedUsers(db)
-	
+
 	SeedBadgeSettings(db)
 	SeedCourses(db)
 	SeedLevels(db)

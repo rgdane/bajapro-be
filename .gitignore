@@ -13,4 +13,3 @@ js-script
 src/vendor
 go.sum
 *.sql
-agent.md

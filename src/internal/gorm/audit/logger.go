@@ -27,7 +27,6 @@ var skipTables = []string{
 	"case_report_assigned_users",
 	"case_reports",
 	"squad_members",
-	"user_has_roles",
 }
 
 func shouldSkipTable(tableName string) bool {

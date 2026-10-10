@@ -6,29 +6,14 @@ import (
 
 func RequireRole(roles ...string) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		userRoles := c.Locals("roles").([]string)
-
-		for _, ur := range userRoles {
-			for _, r := range roles {
-				if ur == r {
-					return c.Next()
-				}
-			}
+		userRole, ok := c.Locals("role").(string)
+		if !ok || userRole == "" {
+			return fiber.ErrForbidden
 		}
 
-		return fiber.ErrForbidden
-	}
-}
-
-func RequirePermission(perms ...string) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		userPerms := c.Locals("permissions").([]string)
-
-		for _, up := range userPerms {
-			for _, p := range perms {
-				if up == p {
-					return c.Next()
-				}
+		for _, r := range roles {
+			if userRole == r {
+				return c.Next()
 			}
 		}
 

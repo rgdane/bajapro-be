@@ -251,13 +251,7 @@ func (repo *tStudentCourseRepository) FindLeaderboard(
 
 		INNER JOIN users u
 			ON u.id = enrolled.user_id
-
-		INNER JOIN user_has_roles uhr
-			ON uhr.user_id = u.id
-
-		INNER JOIN roles r
-			ON r.id = uhr.role_id
-			AND LOWER(r.name) = 'student'
+			AND u.role = 'student'
 
 		LEFT JOIN m_badge_settings b
 			ON b.id = enrolled.badge_id

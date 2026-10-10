@@ -11,10 +11,9 @@ func Setup(app *fiber.App, c *container.AppContainer) {
 
 	AuthRoutes(api, c)
 	MLevelRoutes(api, c)
-	PermissionRoutes(api, c)
-	RoleRoutes(api, c)
 	UserRoutes(api, c)
 	MClassRoutes(api, c)
+	MSchoolRoutes(api, c)
 	MBadgeSettings(api, c)
 	MCourses(api, c)
 	TStudentCourseRoute(api, c)
