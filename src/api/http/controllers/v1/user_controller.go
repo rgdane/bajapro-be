@@ -15,8 +15,7 @@ import (
 
 func GetUsers(cn *container.AppContainer) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		squadID, _ := helper.ParseQueryInt64(c, "squad_id")
-		roleID, _ := helper.ParseQueryInt64(c, "role_id")
+		role := c.Query("role")
 		cursor, _ := helper.ParseQueryInt64(c, "cursor")
 		limit, _ := helper.ParseQueryInt64(c, "limit")
 		name := c.Query("name")
@@ -25,8 +24,7 @@ func GetUsers(cn *container.AppContainer) fiber.Handler {
 		deleted := c.Query("show_deleted", "false") == "true"
 
 		filter := dto.UserFilterDto{
-			SquadID:     squadID,
-			RoleID:      roleID,
+			Role:        role,
 			Preload:     c.Query("preload", "false") == "true",
 			Cursor:      cursor,
 			Limit:       limit,
@@ -122,7 +120,7 @@ func BulkCreateUsers(cn *container.AppContainer) fiber.Handler {
 		if len(input.Data) == 0 {
 			return presenters.ErrorResponseWithMessage(c, fiber.StatusBadRequest, "No data provided")
 		}
-		
+
 		createdUsers, err := cn.UserHandler.BulkCreateHandler(&input)
 		if err != nil {
 			return presenters.ErrorResponse(c, fiber.StatusInternalServerError, err)

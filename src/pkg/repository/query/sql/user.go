@@ -216,7 +216,7 @@ func (repo *userRepository) FindUser() ([]models.User, error) {
 
 func (repo *userRepository) FindUserByID(id int64) (*models.User, error) {
 	data, err := repo.getQueryBuilder().
-		WithPreloads("HasRoles.HasPermissions", "HasClass").
+		WithPreloads("HasClass").
 		FindByID(id)
 
 	if err != nil {
@@ -226,7 +226,7 @@ func (repo *userRepository) FindUserByID(id int64) (*models.User, error) {
 	log.Printf("USER ID     : %d", data.ID)
 	log.Printf("CLASS ID    : %+v", data.ClassID)
 	log.Printf("HAS CLASS   : %+v", data.HasClass)
-	log.Printf("ROLES COUNT : %d", len(data.HasRoles))
+	log.Printf("ROLE        : %s", data.Role)
 
 	if !data.IsPasswordDefault {
 		data.Password = ""

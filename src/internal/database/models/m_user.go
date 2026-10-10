@@ -7,41 +7,54 @@ import (
 	"gorm.io/gorm"
 )
 
-const TableNameUser = "users"
+type UserRole string
+
+const (
+	RoleAdmin   UserRole = "admin"
+	RoleTeacher UserRole = "teacher"
+	RoleStudent UserRole = "student"
+)
+
+func (r UserRole) Valid() bool {
+	switch r {
+	case RoleAdmin, RoleTeacher, RoleStudent:
+		return true
+	}
+	return false
+}
 
 // User mapped from table <users>
 type User struct {
-	ID     			  int64 		 `gorm:"primaryKey;autoIncrement:false;type:bigint;default:nextval('users_seq'::regclass)" json:"id"`
-	RoleID 			  int64 		 `gorm:"column:role_id" json:"role_id"`
+	ID                int64          `gorm:"primaryKey;autoIncrement:false;type:bigint;default:nextval('users_seq'::regclass)" json:"id"`
+	Role              UserRole       `gorm:"column:role;size:20;not null" json:"role"`
+	SchoolID          *int64         `gorm:"column:school_id" json:"school_id"`
 	ClassID           *int64         `gorm:"column:class_id" json:"class_id"`
 	Code              *string        `gorm:"column:code;size:50;unique;index:idx_users_code" json:"code"`
 	Name              string         `gorm:"column:name;size:255;not null;index:idx_users_name" json:"name"`
 	Email             string         `gorm:"column:email;size:255;not null;unique;index:idx_users_email" json:"email"`
 	Password          string         `gorm:"column:password;not null" json:"password"`
 	Nip               *string        `gorm:"column:nip;size:50" json:"nip"`
-	SchoolInstance   *string        `gorm:"column:school_instance;size:255" json:"school_instance"`
 	AvatarUrl         *string        `gorm:"column:avatar_url;size:255" json:"avatar_url"`
 	IsPasswordDefault bool           `gorm:"column:is_password_default;default:true;" json:"is_password_default"`
-	Approval 		  int8           `gorm:"column:approval;default:0;" json:"approval" description:"0=Pending, 1=Disetujui, 2=Ditolak"`
+	Approval          int8           `gorm:"column:approval;default:0;" json:"approval" description:"0=Pending, 1=Disetujui, 2=Ditolak"`
 	IsActive          bool           `gorm:"column:isactive;default:true" json:"isactive"`
 	CreatedAt         time.Time      `gorm:"column:created_at;autoCreateTime" json:"created_at"`
 	UpdatedAt         time.Time      `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
 	DeletedAt         gorm.DeletedAt `gorm:"index:idx_users_deleted_at" json:"deleted_at"`
 
 	// Relations
-	HasRoles []Role `gorm:"many2many:user_has_roles;constraint:OnDelete:CASCADE;" json:"has_roles"`
-	HasClass *MClass `gorm:"foreignKey:ClassID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"class"`
-	TeachingClasses []MClass `gorm:"many2many:m_class_teachers;" json:"teaching_classes"`
-	StudentCourses []TStudentCourse `gorm:"foreignKey:UserID;references:ID" json:"student_courses"`
-	StudentProgress []TStudentProgress `gorm:"foreignKey:UserID;references:ID" json:"student_progress"`
-	WonderingScores []TWonderingScore `gorm:"foreignKey:UserID;references:ID" json:"wondering_scores"`
-	CodeAnswers []TCodeAnswer `gorm:"foreignKey:UserID;references:ID" json:"code_answers"`
-	EssayAnswers []TEssayAnswer `gorm:"foreignKey:UserID;references:ID" json:"essay_answers"`
-	CodeHistoryLogs []TCodeHistoryLogs `gorm:"foreignKey:UserID;references:ID" json:"code_history_logs"`
+	School          *MSchool           `gorm:"foreignKey:SchoolID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"school,omitempty"`
+	HasClass        *MClass            `gorm:"foreignKey:ClassID;references:ID;-:migration" json:"class,omitempty"`
+	StudentCourses  []TStudentCourse   `gorm:"foreignKey:UserID;references:ID" json:"student_courses,omitempty"`
+	StudentProgress []TStudentProgress `gorm:"foreignKey:UserID;references:ID" json:"student_progress,omitempty"`
+	WonderingScores []TWonderingScore  `gorm:"foreignKey:UserID;references:ID" json:"wondering_scores,omitempty"`
+	CodeAnswers     []TCodeAnswer      `gorm:"foreignKey:UserID;references:ID" json:"code_answers,omitempty"`
+	EssayAnswers    []TEssayAnswer     `gorm:"foreignKey:UserID;references:ID" json:"essay_answers,omitempty"`
+	CodeHistoryLogs []TCodeHistoryLogs `gorm:"foreignKey:UserID;references:ID" json:"code_history_logs,omitempty"`
 }
 
 func (*User) TableName() string {
-	return TableNameUser
+	return "users"
 }
 
 func (u *User) GenerateUserCode() string {

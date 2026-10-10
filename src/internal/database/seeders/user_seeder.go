@@ -9,16 +9,6 @@ import (
 )
 
 func SeedUsers(db *gorm.DB) error {
-	var teacherRole, studentRole models.Role
-
-	if err := db.Where("name = ?", "teacher").First(&teacherRole).Error; err != nil {
-		return err
-	}
-
-	if err := db.Where("name = ?", "student").First(&studentRole).Error; err != nil {
-		return err
-	}
-
 	password, err := bcrypt.GenerateFromPassword(
 		[]byte("123456"),
 		bcrypt.DefaultCost,
@@ -29,24 +19,42 @@ func SeedUsers(db *gorm.DB) error {
 
 	studentClassID := int64(1)
 
+	var school models.MSchool
+	db.Where("LOWER(school_name) = ?", "smk negeri 1 jakarta").First(&school)
+	var schoolID *int64
+	if school.ID != 0 {
+		schoolID = &school.ID
+	}
+
 	users := []struct {
 		Name     string
 		Email    string
-		Role     models.Role
+		Role     models.UserRole
+		SchoolID *int64
 		ClassID  *int64
 		Approval int8
 	}{
 		{
+			Name:     "Admin 1",
+			Email:    "admin@mail.com",
+			Role:     models.RoleAdmin,
+			SchoolID: nil,
+			ClassID:  nil,
+			Approval: 1,
+		},
+		{
 			Name:     "Teacher 1",
 			Email:    "teacher@mail.com",
-			Role:     teacherRole,
+			Role:     models.RoleTeacher,
+			SchoolID: schoolID,
 			ClassID:  nil,
 			Approval: 0,
 		},
 		{
 			Name:     "Student 1",
 			Email:    "student@mail.com",
-			Role:     studentRole,
+			Role:     models.RoleStudent,
+			SchoolID: schoolID,
 			ClassID:  &studentClassID,
 			Approval: 1,
 		},
@@ -60,14 +68,16 @@ func SeedUsers(db *gorm.DB) error {
 		switch {
 		case err == gorm.ErrRecordNotFound:
 			user = models.User{
-				Name:              item.Name,
-				Email:             item.Email,
-				ClassID:           item.ClassID,
-				Password:          string(password),
-				Approval:          item.Approval,
-				IsActive:          true,
-				CreatedAt:         time.Now(),
-				UpdatedAt:         time.Now(),
+				Name:      item.Name,
+				Email:     item.Email,
+				Role:      item.Role,
+				SchoolID:  item.SchoolID,
+				ClassID:   item.ClassID,
+				Password:  string(password),
+				Approval:  item.Approval,
+				IsActive:  true,
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
 			}
 
 			if err := db.Create(&user).Error; err != nil {
@@ -80,20 +90,26 @@ func SeedUsers(db *gorm.DB) error {
 		default:
 			// Pastikan user lama juga mendapatkan class_id terbaru.
 			if err := db.Model(&user).Updates(map[string]any{
-				"name":                   item.Name,
-				"class_id":               item.ClassID,
-				"approval":               item.Approval,
-				"isactive":               true,
-				"updated_at":             time.Now(),
+				"name":       item.Name,
+				"school_id":  item.SchoolID,
+				"class_id":   item.ClassID,
+				"role":       item.Role,
+				"approval":   item.Approval,
+				"isactive":   true,
+				"updated_at": time.Now(),
 			}).Error; err != nil {
 				return err
 			}
 		}
+	}
 
-		// Replace membuat role tetap konsisten dan tidak duplikat.
-		if err := db.Model(&user).
-			Association("HasRoles").
-			Replace(&item.Role); err != nil {
+	// Tautkan teacher seeder sebagai pengajar kelas di sekolahnya,
+	// supaya registrasi student via kode kelas punya teacher valid.
+	var teacher models.User
+	if err := db.Where("email = ?", "teacher@mail.com").First(&teacher).Error; err == nil && teacher.SchoolID != nil {
+		if err := db.Model(&models.MClass{}).
+			Where("school_id = ? AND teacher_id IS NULL", *teacher.SchoolID).
+			Update("teacher_id", teacher.ID).Error; err != nil {
 			return err
 		}
 	}

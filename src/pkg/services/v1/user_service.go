@@ -51,6 +51,10 @@ func (s *userService) GetDB() *gorm.DB {
 }
 
 func (s *userService) CreateUser(input *models.User) (*models.User, error) {
+	if err := validateUserSchoolClass(input.Role, input.SchoolID, input.ClassID); err != nil {
+		return nil, err
+	}
+
 	hashedPassword, err := HashPassword(input.Password)
 	if err != nil {
 		return nil, err
@@ -64,6 +68,34 @@ func (s *userService) CreateUser(input *models.User) (*models.User, error) {
 		return nil, gorm_err.TranslateGormError(err)
 	}
 	return data, nil
+}
+
+func validateUserSchoolClass(role models.UserRole, schoolID, classID *int64) error {
+	switch role {
+	case models.RoleTeacher:
+		if schoolID == nil {
+			return fmt.Errorf("teacher wajib memiliki school_id")
+		}
+	case models.RoleStudent:
+		if schoolID == nil || classID == nil {
+			return fmt.Errorf("student wajib memiliki school_id dan class_id")
+		}
+		var class models.MClass
+		if err := config.DB.Where("id = ?", *classID).First(&class).Error; err != nil {
+			return fmt.Errorf("kelas tidak ditemukan")
+		}
+		if class.SchoolID != *schoolID {
+			return fmt.Errorf("kelas tidak berasal dari sekolah yang sama dengan student")
+		}
+		if !class.IsActive {
+			return fmt.Errorf("kelas tidak aktif")
+		}
+	case models.RoleAdmin:
+		if classID != nil {
+			return fmt.Errorf("admin tidak boleh memiliki class_id")
+		}
+	}
+	return nil
 }
 
 func (s *userService) UpdateUser(id int64, updates map[string]interface{}, associations map[string]interface{}) (*models.User, error) {
@@ -92,6 +124,67 @@ func (s *userService) UpdateUser(id int64, updates map[string]interface{}, assoc
 			return nil, err
 		}
 		updates["password"] = hashedPassword
+	}
+
+	_, hasRole := updates["role"]
+	_, hasSchool := updates["school_id"]
+	_, hasClass := updates["class_id"]
+	if hasRole || hasSchool || hasClass {
+		existing, err := repo.FindUserByID(id)
+		if err != nil {
+			return nil, gorm_err.TranslateGormError(err)
+		}
+
+		effectiveRole := existing.Role
+		effectiveSchoolID := existing.SchoolID
+		effectiveClassID := existing.ClassID
+
+		if v, ok := updates["role"].(string); ok && v != "" {
+			effectiveRole = models.UserRole(v)
+		}
+		if v, ok := updates["school_id"].(int64); ok {
+			effectiveSchoolID = &v
+		}
+		if v, ok := updates["school_id"].(*int64); ok {
+			effectiveSchoolID = v
+		}
+		if v, ok := updates["class_id"].(int64); ok {
+			effectiveClassID = &v
+		}
+		if v, ok := updates["class_id"].(*int64); ok {
+			effectiveClassID = v
+		}
+
+		if !effectiveRole.Valid() {
+			return nil, fmt.Errorf("role tidak valid")
+		}
+
+		// Role menentukan school/class yang wajib. Bersihkan yang tak relevan
+		// agar perubahan role selalu konsisten (mis. student -> teacher).
+		switch effectiveRole {
+		case models.RoleAdmin:
+			effectiveSchoolID = nil
+			effectiveClassID = nil
+		case models.RoleTeacher:
+			effectiveClassID = nil
+		}
+
+		if err := validateUserSchoolClass(effectiveRole, effectiveSchoolID, effectiveClassID); err != nil {
+			return nil, err
+		}
+
+		// Tulis balik nilai efektif agar penghapusan (NULL) ikut tersimpan.
+		updates["role"] = string(effectiveRole)
+		if effectiveSchoolID != nil {
+			updates["school_id"] = *effectiveSchoolID
+		} else {
+			updates["school_id"] = nil
+		}
+		if effectiveClassID != nil {
+			updates["class_id"] = *effectiveClassID
+		} else {
+			updates["class_id"] = nil
+		}
 	}
 
 	data, err := repo.UpdateUser(id, updates)
@@ -123,20 +216,12 @@ func (s *userService) DeleteUser(id int64, isPermanent bool) (err error) {
 
 func (s *userService) GetAllUsers(filter dto.UserFilterDto) ([]models.User, error) {
 	repo := s.repo
-	if filter.SquadID != 0 {
-		repo = repo.
-			WithJoins("JOIN squad_members ON squad_members.user_id = users.id").
-			WithWhere("squad_members.squad_id = ?", filter.SquadID)
-	}
-
-	if filter.RoleID != 0 {
-		repo = repo.
-			WithJoins("JOIN user_has_roles ON user_has_roles.user_id = users.id").
-			WithWhere("user_has_roles.role_id = ?", filter.RoleID)
+	if filter.Role != "" {
+		repo = repo.WithWhere("users.role = ?", filter.Role)
 	}
 
 	if filter.Preload {
-		repo = repo.WithPreloads("HasRoles", "HasClass", "TeachingClasses")
+		repo = repo.WithPreloads("HasClass", "School")
 	}
 	if filter.Limit != 0 {
 		repo = repo.WithLimit(int(filter.Limit))
@@ -165,7 +250,7 @@ func (s *userService) GetAllUsers(filter dto.UserFilterDto) ([]models.User, erro
 func (s *userService) GetUserByID(id int64, filter dto.UserFilterDto) (*models.User, error) {
 	repo := s.repo
 	if filter.Preload {
-		repo = repo.WithPreloads("HasRoles", "HasSquads", "HasTitle", "HasBacklogItems", "HasBacklogItems.HasStatus")
+		repo = repo.WithPreloads("HasClass", "School")
 	}
 	data, err := repo.FindUserByID(id)
 	if err != nil {
