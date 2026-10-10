@@ -13,8 +13,8 @@ import (
 func MClassRoutes(router fiber.Router, c *container.AppContainer) {
 	app := router.Group("class", middleware.JWTMiddleware())
 	app.Get("/", controllers.GetMClasses(c))
-	app.Post("/", controllers.CreateMClasses(c))
+	app.Post("/", middleware.RequireRole("admin"), controllers.CreateMClasses(c))
 	app.Get("/:id", controllers.GetMClassByID(c))
-	app.Put("/:id", controllers.UpdateMClasses(c))
-	app.Delete("/:id", controllers.DeleteMClasses(c))
+	app.Put("/:id", middleware.RequireRole("admin"), controllers.UpdateMClasses(c))
+	app.Delete("/:id", middleware.RequireRole("admin"), controllers.DeleteMClasses(c))
 }

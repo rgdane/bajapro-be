@@ -11,34 +11,42 @@ func SeedClasses(db *gorm.DB) error {
 	db.Model(&models.MClass{}).Count(&count)
 
 	if count > 0 {
-		return nil // biar tidak duplicate
+		return nil
+	}
+
+	var school1, school2 models.MSchool
+	db.Where("LOWER(school_name) = ?", "smk negeri 1 jakarta").First(&school1)
+	db.Where("LOWER(school_name) = ?", "smk negeri 2 bandung").First(&school2)
+
+	if school1.ID == 0 || school2.ID == 0 {
+		return nil
 	}
 
 	classes := []models.MClass{
 		{
-			ClassName:  "X RPL 1",
-			SchoolName: "SMK Negeri 1 Jakarta",
-			ClassCode:  "RPL-X-001",
+			ClassName: "X RPL 1",
+			ClassCode: "RPL-X-001",
+			SchoolID:  school1.ID,
 		},
 		{
-			ClassName:  "X RPL 2",
-			SchoolName: "SMK Negeri 1 Jakarta",
-			ClassCode:  "RPL-X-002",
+			ClassName: "X RPL 2",
+			ClassCode: "RPL-X-002",
+			SchoolID:  school1.ID,
 		},
 		{
-			ClassName:  "XI RPL 1",
-			SchoolName: "SMK Negeri 1 Jakarta",
-			ClassCode:  "RPL-XI-001",
+			ClassName: "XI RPL 1",
+			ClassCode: "RPL-XI-001",
+			SchoolID:  school1.ID,
 		},
 		{
-			ClassName:  "XII RPL 1",
-			SchoolName: "SMK Negeri 1 Jakarta",
-			ClassCode:  "RPL-XII-001",
+			ClassName: "XII RPL 1",
+			ClassCode: "RPL-XII-001",
+			SchoolID:  school1.ID,
 		},
 		{
-			ClassName:  "X TKJ 1",
-			SchoolName: "SMK Negeri 2 Bandung",
-			ClassCode:  "TKJ-X-001",
+			ClassName: "X TKJ 1",
+			ClassCode: "TKJ-X-001",
+			SchoolID:  school2.ID,
 		},
 	}
 

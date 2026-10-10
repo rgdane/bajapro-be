@@ -1,6 +1,8 @@
 package services
 
 import (
+	"errors"
+	"fmt"
 	"jk-api/api/http/controllers/v1/dto"
 	"jk-api/internal/config"
 	"jk-api/internal/database/models"
@@ -45,6 +47,23 @@ func (s *mClassService) GetDB() *gorm.DB {
 }
 
 func (s *mClassService) CreateMClass(input *models.MClass) (*models.MClass, error) {
+	// Business Logic Validations
+	var school models.MSchool
+	if err := config.DB.Where("id = ? AND isactive = true", input.SchoolID).First(&school).Error; err != nil {
+		return nil, fmt.Errorf("sekolah dengan id %d tidak ditemukan atau tidak aktif", input.SchoolID)
+	}
+
+	if input.TeacherID != nil {
+		var teacher models.User
+		if err := config.DB.Where("id = ? AND role = ? AND isactive = true", *input.TeacherID, models.RoleTeacher).First(&teacher).Error; err != nil {
+			return nil, fmt.Errorf("pengajar dengan id %d tidak ditemukan, tidak aktif, atau bukan role teacher", *input.TeacherID)
+		}
+
+		if teacher.SchoolID == nil || *teacher.SchoolID != input.SchoolID {
+			return nil, fmt.Errorf("pengajar tidak berasal dari sekolah yang sama dengan kelas")
+		}
+	}
+
 	data, err := s.repo.InsertMClass(input)
 	if err != nil {
 		return nil, gorm_err.TranslateGormError(err)
@@ -72,6 +91,39 @@ func (s *mClassService) UpdateMClass(
 		delete(payload, key)
 	}
 
+	existing, err := repo.FindMClassByID(id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("kelas tidak ditemukan")
+		}
+		return nil, gorm_err.TranslateGormError(err)
+	}
+
+	schoolID := existing.SchoolID
+	if v, ok := payload["school_id"].(int64); ok {
+		schoolID = v
+	}
+
+	var school models.MSchool
+	if err := config.DB.Where("id = ? AND isactive = true", schoolID).First(&school).Error; err != nil {
+		return nil, fmt.Errorf("sekolah dengan id %d tidak ditemukan atau tidak aktif", schoolID)
+	}
+
+	teacherID := existing.TeacherID
+	if v, ok := payload["teacher_id"].(int64); ok {
+		teacherID = &v
+	}
+
+	if teacherID != nil {
+		var teacher models.User
+		if err := config.DB.Where("id = ? AND role = ? AND isactive = true", *teacherID, models.RoleTeacher).First(&teacher).Error; err != nil {
+			return nil, fmt.Errorf("pengajar dengan id %d tidak ditemukan, tidak aktif, atau bukan role teacher", *teacherID)
+		}
+		if teacher.SchoolID == nil || *teacher.SchoolID != schoolID {
+			return nil, fmt.Errorf("pengajar tidak berasal dari sekolah yang sama dengan kelas")
+		}
+	}
+
 	updated, err := repo.UpdateMClass(id, payload)
 	if err != nil {
 		return nil, gorm_err.TranslateGormError(err)
@@ -81,14 +133,20 @@ func (s *mClassService) UpdateMClass(
 }
 
 func (s *mClassService) DeleteMClass(id int64) error {
-	err := s.repo.WithAssociations("Teachers", "Students").RemoveMClass(id)
+	err := s.repo.WithAssociations("Students").RemoveMClass(id)
 	return gorm_err.TranslateGormError(err)
 }
 
 func (s *mClassService) GetAllMClasses(filter dto.MClassFilterDto) ([]models.MClass, error) {
 	repo := s.repo
+	if filter.SchoolID != nil {
+		repo = repo.WithWhere("school_id = ?", *filter.SchoolID)
+	}
+	if filter.TeacherID != nil {
+		repo = repo.WithWhere("teacher_id = ?", *filter.TeacherID)
+	}
 	if filter.Preload {
-		repo = repo.WithPreloads("Teachers", "Students")
+		repo = repo.WithPreloads("School", "Teacher", "Students")
 	}
 	data, err := repo.FindMClass()
 	if err != nil {
@@ -100,7 +158,7 @@ func (s *mClassService) GetAllMClasses(filter dto.MClassFilterDto) ([]models.MCl
 func (s *mClassService) GetMClassByID(id int64, filter dto.MClassFilterDto) (*models.MClass, error) {
 	repo := s.repo
 	if filter.Preload {
-		repo = repo.WithPreloads("Teachers", "Students")
+		repo = repo.WithPreloads("School", "Teacher", "Students")
 	}
 	data, err := repo.FindMClassByID(id)
 	if err != nil {

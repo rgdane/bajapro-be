@@ -13,8 +13,24 @@ import (
 
 func GetMClasses(cn *container.AppContainer) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		var schoolID *int64
+		if val := c.Query("school_id"); val != "" {
+			if parsed, err := strconv.ParseInt(val, 10, 64); err == nil {
+				schoolID = &parsed
+			}
+		}
+
+		var teacherID *int64
+		if val := c.Query("teacher_id"); val != "" {
+			if parsed, err := strconv.ParseInt(val, 10, 64); err == nil {
+				teacherID = &parsed
+			}
+		}
+
 		filter := dto.MClassFilterDto{
-			Preload: c.Query("preload", "false") == "true",
+			Preload:   c.Query("preload", "false") == "true",
+			SchoolID:  schoolID,
+			TeacherID: teacherID,
 		}
 
 		data, err := cn.MClassHandler.GetAllMClassesHandler(filter)
