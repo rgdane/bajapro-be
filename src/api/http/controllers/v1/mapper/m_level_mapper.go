@@ -13,7 +13,8 @@ func CreateMLevelDtoToModel(dto *dto.CreateMLevelDto) (*models.MLevel, error) {
 	}
 
 	data := &models.MLevel{
-		
+		LevelName:   dto.LevelName,
+		Description: dto.Description,
 	}
 
 	return data, nil
