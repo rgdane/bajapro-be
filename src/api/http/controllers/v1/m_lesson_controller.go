@@ -22,8 +22,24 @@ func GetMLessons(cn *container.AppContainer) fiber.Handler {
 		order := c.Query("order", "asc")
 		deleted := c.Query("show_deleted", "false") == "true"
 
+		var courseID *int64
+		if val := c.Query("course_id"); val != "" {
+			if parsed, err := strconv.ParseInt(val, 10, 64); err == nil {
+				courseID = &parsed
+			}
+		}
+
+		var levelID *int64
+		if val := c.Query("level_id"); val != "" {
+			if parsed, err := strconv.ParseInt(val, 10, 64); err == nil {
+				levelID = &parsed
+			}
+		}
+
 		filter := dto.MLessonFilterDto{
 			Preload:     c.Query("preload", "false") == "true",
+			CourseID:    courseID,
+			LevelID:     levelID,
 			Cursor:      cursor,
 			Limit:       limit,
 			Name:        name,

@@ -94,6 +94,14 @@ func (s *mLessonService) GetAllMLessons(filter dto.MLessonFilterDto) ([]models.M
 		repo = repo.WithPreloads("Course", "Level")
 	}
 
+	if filter.CourseID != nil {
+		repo = repo.WithWhere("m_lessons.course_id = ?", *filter.CourseID)
+	}
+
+	if filter.LevelID != nil {
+		repo = repo.WithWhere("m_lessons.level_id = ?", *filter.LevelID)
+	}
+
 	if filter.Sort != "" && filter.Order != "" {
 		orderClause := filter.Sort + " " + filter.Order
 		repo = repo.WithOrder(orderClause)
