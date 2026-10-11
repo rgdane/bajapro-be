@@ -22,8 +22,16 @@ func GetMSubLessons(cn *container.AppContainer) fiber.Handler {
 		order := c.Query("order", "asc")
 		deleted := c.Query("show_deleted", "false") == "true"
 
+		var lessonID *int64
+		if val := c.Query("lesson_id"); val != "" {
+			if parsed, err := strconv.ParseInt(val, 10, 64); err == nil {
+				lessonID = &parsed
+			}
+		}
+
 		filter := dto.MSubLessonFilterDto{
 			Preload:     c.Query("preload", "false") == "true",
+			LessonID:    lessonID,
 			Cursor:      cursor,
 			Limit:       limit,
 			Name:        name,

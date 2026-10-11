@@ -41,6 +41,7 @@ type MSubLessonResponseDto struct {
 
 type MSubLessonFilterDto struct {
 	Preload     bool
+	LessonID    *int64
 	Sort        string
 	Order       string
 	Limit       int64
