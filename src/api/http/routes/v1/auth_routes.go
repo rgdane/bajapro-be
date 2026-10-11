@@ -17,6 +17,8 @@ func AuthRoutes(router fiber.Router, c *container.AppContainer) {
 	)
 	app.Post("/login", controllers.Login(c))
 	app.Post("/register", controllers.Register(c))
+	// Daftar sekolah untuk dropdown registrasi guru (publik, tanpa JWT).
+	app.Get("/schools", controllers.GetMSchools(c))
 	app.Post("/refresh", controllers.RefreshToken(c))
 	app.Post("/logout", middleware.JWTMiddleware(), controllers.Logout(c))
 
