@@ -95,7 +95,7 @@ func (s *mSubLessonService) GetAllMSubLessons(filter dto.MSubLessonFilterDto) ([
 	}
 
 	if filter.LessonID != nil {
-		repo = repo.WithWhere("m_sub_lessons.lesson_id = ?", *filter.LessonID)
+		repo = repo.WithWhere("lesson_id = ?", *filter.LessonID)
 	}
 
 	if filter.Sort != "" && filter.Order != "" {

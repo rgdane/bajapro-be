@@ -95,11 +95,11 @@ func (s *mLessonService) GetAllMLessons(filter dto.MLessonFilterDto) ([]models.M
 	}
 
 	if filter.CourseID != nil {
-		repo = repo.WithWhere("m_lessons.course_id = ?", *filter.CourseID)
+		repo = repo.WithWhere("course_id = ?", *filter.CourseID)
 	}
 
 	if filter.LevelID != nil {
-		repo = repo.WithWhere("m_lessons.level_id = ?", *filter.LevelID)
+		repo = repo.WithWhere("level_id = ?", *filter.LevelID)
 	}
 
 	if filter.Sort != "" && filter.Order != "" {
