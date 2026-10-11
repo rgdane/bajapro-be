@@ -73,8 +73,16 @@ func GetMMaterials(cn *container.AppContainer) fiber.Handler {
 		order := c.Query("order", "asc")
 		deleted := c.Query("show_deleted", "false") == "true"
 
+		var subLessonID *int64
+		if val := c.Query("sub_lesson_id"); val != "" {
+			if parsed, err := strconv.ParseInt(val, 10, 64); err == nil {
+				subLessonID = &parsed
+			}
+		}
+
 		filter := dto.MMaterialFilterDto{
 			Preload:     c.Query("preload", "false") == "true",
+			SubLessonID: subLessonID,
 			Cursor:      cursor,
 			Limit:       limit,
 			Name:        name,

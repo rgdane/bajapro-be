@@ -295,6 +295,10 @@ func (s *mMaterialService) GetAllMMaterials(filter dto.MMaterialFilterDto) ([]mo
 		repo = repo.WithPreloads("SubLesson")
 	}
 
+	if filter.SubLessonID != nil {
+		repo = repo.WithWhere("m_materials.sub_lesson_id = ?", *filter.SubLessonID)
+	}
+
 	if filter.Name != "" {
 		repo = repo.WithWhere("title ILIKE ?", "%"+filter.Name+"%")
 	}

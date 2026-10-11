@@ -52,6 +52,7 @@ type MMaterialResponseDto struct {
 
 type MMaterialFilterDto struct {
 	Preload     bool
+	SubLessonID *int64
 	Sort        string
 	Order       string
 	Limit       int64
