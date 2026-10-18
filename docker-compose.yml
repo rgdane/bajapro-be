@@ -1,0 +1,91 @@
+# BAJAPRO — stack produksi.
+#
+# Struktur clone di server (dua repo bersebelahan):
+#   <dir>/bajapro-be/
+#   <dir>/bajapro-fe-revamp/
+#
+# Jalankan dari dalam `bajapro-be`:
+#   cp .env.example .env   # lalu isi nilainya
+#   docker compose up -d --build
+#   docker compose exec piston cli install java   # sekali, untuk sandbox Java
+#
+# Catatan: Neo4j & Mongo belum dipakai (InitNeo4j() masih dikomentari di
+# bootstrap.go), jadi belum disertakan. Tambahkan service-nya saat dibutuhkan.
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: bajapro-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-bajapro}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-bajapro}
+      POSTGRES_DB: ${POSTGRES_DB:-bajapro}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-bajapro} -d ${POSTGRES_DB:-bajapro}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks: [bajapro]
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        ENV: production
+    container_name: bajapro-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PORT: "8080"
+      DB_CONNECTION: postgres
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_USERNAME: ${POSTGRES_USER:-bajapro}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-bajapro}
+      DB_DATABASE: ${POSTGRES_DB:-bajapro}
+      DB_SSLMODE: disable
+      JWT_SECRET: ${JWT_SECRET:-ubah-secret-ini}
+      PISTON_URL: http://piston:2000
+    ports:
+      - "8080:8080"
+    networks: [bajapro]
+
+  frontend:
+    build:
+      context: ../bajapro-fe-revamp
+      dockerfile: Dockerfile
+    container_name: bajapro-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      # Server-only (dibaca runtime oleh route handler/proxy di jaringan compose).
+      BACKEND_BASE_URL: http://backend:8080/api/v1
+    ports:
+      - "3000:3000"
+    networks: [bajapro]
+
+  piston:
+    image: ghcr.io/engineer-man/piston
+    container_name: bajapro-piston
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - piston_data:/piston
+    ports:
+      - "2000:2000"
+    networks: [bajapro]
+
+volumes:
+  db_data:
+  piston_data:
+
+networks:
+  bajapro:
+    driver: bridge
