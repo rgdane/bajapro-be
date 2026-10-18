@@ -70,7 +70,8 @@ Alur request: `routes → controller → handler → service → repository → 
    go run cmd/main.go
    ```
 
-   Server berjalan di <http://localhost:5000> (default `PORT=8080` bila tidak diisi).
+   Server berjalan di <http://localhost:5000> — `PORT=5000` sudah diisi di
+   `src/.env.example`. (Bila `PORT` kosong, default kode adalah `8080`.)
 
    Migrasi dan seeder dijalankan otomatis saat startup
    (`internal/database/migrations`, `internal/database/seeders`).
@@ -81,6 +82,17 @@ Alur request: `routes → controller → handler → service → repository → 
    cd src
    go build ./...
    ```
+
+## Port: Development vs Production
+
+| Lingkungan | Backend | Frontend | Catatan |
+|------------|---------|----------|---------|
+| **Development** (`go run` / `npm run dev`) | **5000** (`PORT=5000` di `src/.env`) | **3000** (`next dev`) | Diakses langsung dari browser/Postman. |
+| **Production** (Docker Compose) | **8080** (internal container) | **3000** (container) | Backend **tidak** diakses langsung; FE memanggilnya lewat `http://backend:8080/api/v1`. Piston internal di **2000**. |
+
+Di produksi, hanya port frontend yang sebaiknya dipublikasikan ke host (dan
+idealnya di-proxy Nginx/Caddy ke 80/443). Backend, database, dan Piston cukup
+berada di jaringan internal Docker.
 
 ## Produksi (Docker Compose)
 
