@@ -1,126 +1,152 @@
-# JalanKerja Backend
+# BAJAPRO Backend
+
+Backend aplikasi E-Learning Java **BAJAPRO**. Go + Fiber, GORM, PostgreSQL.
 
 ## Project Structures
 
 ```bash
 .
-└── src/
-    ├── api/                                 # Layer presentasi (HTTP/API layer)
-    │   ├── controllers/
-    │   │   └── v1/                          # Versi API v1
-    │   │       ├── dto/                     # DTO (Data Transfer Object)
-    │   │       │   └── squad_dto.go         # Struct DTO untuk operasi Squad
-    │   │       ├── handler/                 # Handler yang menangani logic
-    │   │       │   └── squad_handler.go     # Handler fungsi CRUD untuk Squad
-    │   │       ├── mapper                   # (Opsional) Mapping antara model, DTO
-    │   │       └── squad_controller.go      # Menghubungkan route ke handler Squad
-    │   ├── presenters/                      # Output formatter
-    │   ├── middleware/                      # Middleware seperti Auth, Logging, dll.
-    │   └── routes/                          # Routing layer
-    │       └── v1/                          # Versi API v1
-    │          ├── routes.go                 # Entry point untuk semua route
-    │          └── squad_routes.go           # Daftar route terkait Squad
-    ├── cmd/                                 # Entry point aplikasi
-    │   └── main.go                          # Fungsi utama untuk menjalankan server
-    ├── internal/
-    │   └── database/
-    │       ├── config/                      # Konfigurasi
-    │       │   └── postgre.go               # Setup PostgreSQL (DSN, koneksi, migrasi)
-    │       ├── models/                      # Model ORM (representasi tabel database)
-    │       │   └── squads.go                # Struct model Squad
-    │       └── seeder/                      # Seeder data awal ke database
-    └── pkg/
-        ├── repository/                      # Layer repository (akses data ke DB)
-        │   ├── adapter/
-        │   │   └── sql/                     # Implementasi repository berbasis SQL
-        │   │       └── squad.go             # Repository interface Squad
-        │   └── query/
-        │       └── sql/
-        │           └── squad.go             # Implement repo Squad
-        └── services/                        # Logika bisnis
-            └── v1/                          # Versi API v1
-                └── squad_service.go         # Business logic squad
+├── src/
+│   ├── api/                                 # Layer presentasi (HTTP/API)
+│   │   ├── controllers/v1/                  # Controller per resource
+│   │   │   ├── dto/                         # DTO (Create/Update/Filter/Response)
+│   │   │   ├── handlers/                    # Logic handler (transaksi)
+│   │   │   ├── mapper/                      # Konversi DTO <-> model
+│   │   │   └── m_course_controller.go       # Contoh controller master
+│   │   ├── middleware/                      # JWT, RBAC (RequireRole)
+│   │   ├── presenters/                      # SuccessResponse / ErrorResponse
+│   │   └── routes/v1/                       # routes.go + <resource>_routes.go
+│   ├── cmd/                                 # Entry point (main.go + bootstrap/)
+│   ├── internal/
+│   │   ├── config/                          # fiber, logger, postgres, neo4j
+│   │   ├── container/                       # DI wiring (app_container.go)
+│   │   ├── database/
+│   │   │   ├── models/                      # Model GORM
+│   │   │   ├── migrations/                  # AutoMigrate
+│   │   │   └── seeders/                     # Data awal
+│   │   └── constant/
+│   └── pkg/
+│       ├── repository/
+│       │   ├── adapter/sql/                 # Interface repository
+│       │   └── query/sql/                   # Implementasi query
+│       └── services/v1/                     # Business logic
+├── docker-compose.yml                       # Stack produksi (db, backend, frontend, piston)
+├── .env.example                             # Variabel untuk docker compose
+├── Dockerfile                               # Image backend (multi-stage)
+└── makefile                                 # Perintah Docker (build/run/logs)
 ```
 
-# Flows
+Alur request: `routes → controller → handler → service → repository → DB`.
 
-![Flow Diagram](https://jam.dev/cdn-cgi/image/width=1000,quality=100,dpr=1/https://cdn-jam-screenshots.jam.dev/4bee731580457b0e55664da35511cc00/screenshot/da869424-f1e0-4435-a921-c790171b9c9d.png)
+## Kebutuhan
 
-# Installations
+- Go 1.24+
+- PostgreSQL 16
+- Docker + Docker Compose (untuk produksi & sandbox)
 
-1. Clone Repo
+## Development
+
+1. Clone repo
 
    ```bash
    git clone <repo>
-   cd <repo>
+   cd bajapro-be
    ```
 
-2. Copy environtment
+2. Siapkan environment
 
    ```bash
    cp src/.env.example src/.env
    ```
 
-3. Run App
+   Sesuaikan `DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, `DB_DATABASE`,
+   `JWT_SECRET`. Lihat daftar variabel di `src/.env.example`.
 
-   - Development
+3. Jalankan
 
-   ```javascript
+   ```bash
    cd src
    go mod tidy
    go run cmd/main.go
    ```
 
-   - Production
+   Server berjalan di <http://localhost:5000> (default `PORT=8080` bila tidak diisi).
+
+   Migrasi dan seeder dijalankan otomatis saat startup
+   (`internal/database/migrations`, `internal/database/seeders`).
+
+4. Cek kompilasi
 
    ```bash
-   make build
-   make run
-
-   # for log
-   make logs
+   cd src
+   go build ./...
    ```
 
-App run on <http://localhost:5000>
+## Produksi (Docker Compose)
 
-1. Masuk `src` directory
-2. Pastikan `air` sudah terinstall
+Struktur clone di server — dua repo bersebelahan:
 
-   ```console
-   go install github.com/cosmtrek/air@latest
-   ```
+```
+<dir>/bajapro-be/
+<dir>/bajapro-fe-revamp/
+```
 
-   📌 Perintah ini akan mengunduh dan meng-install Air ke direktori $GOPATH/bin atau $HOME/go/bin.
-   Sehingga ketika ingin membuat project **Go** baru kita tidak perlu mengnstall lagi
+Jalankan dari dalam `bajapro-be`:
 
-3. Jika sudah terinstall jalankan
+```bash
+cp .env.example .env      # isi POSTGRES_* dan JWT_SECRET
+docker compose up -d --build
+```
 
-   ```console
-   air init
-   ```
+Service yang berjalan:
 
-   Ini akan menghasilkan file konfigurasi `.air.toml` di dalam `src`
+| Service    | Port | Keterangan |
+|------------|------|------------|
+| `db`       | -    | PostgreSQL 16 (volume `db_data`) |
+| `backend`  | 8080 | API Go Fiber |
+| `frontend` | 3000 | Next.js (repo `bajapro-fe-revamp`) |
+| `piston`   | 2000 | Sandbox eksekusi kode (Java) |
 
-4. Ubah konfigurasi di file `.air.toml`
-   Ubah konfigurasi `cmd` di file `.air.toml` sesuai dengan direktori main.go
+Aktivasi runtime Java di Piston (sekali saja):
 
-   ```console
-   cmd = "go build -o ./tmp/main <direktori file main.go>"
-   // dalam kasus project ini uban menjadi ./cmd/main.go
+```bash
+docker compose exec piston cli install java
+```
 
-   cmd = "go build -o ./tmp/main ./cmd/main.go"
-   ```
+Log: `docker compose logs -f backend`.
 
-5. Jalankan `air` di console untuk menjalankan `main.go` dengan auto reload
-   ```console
-   air
-   ```
-   Ini akan membuat folder `tmp` di dalam `src` yang berisi `main.exe` hasil build dan `builds-errors.log` untuk menyimpan error log ketika build `main.exe`
-6. Jika ingin informasi lebih soal konfigurasi `.air.toml` misal merubah warna, mendifinisikan nama log dan direktorinya, memilih file dan folder yang akan di `watch` atau dengan kata lain diawasi perubahannya. Kunjungi
+> **Catatan:** Piston membutuhkan **cgroup v2** (default di Linux modern). Di
+> Docker Desktop Windows dengan cgroup v1, service `piston` tidak bisa start.
 
-   [Hot Reload for Golang with Air -- byteSizeGo](https://www.bytesizego.com/blog/golang-air)
+### Tanpa Piston
 
-Reference :
+Sandbox tidak dibutuhkan untuk fitur admin. Jalankan hanya service inti:
 
-- [Github Air](https://github.com/air-verse/air)
-- [Medium - Berkenalan dengan Air Live Reload untuk Aplikasi Go](https://alitindrawan24.medium.com/berkenalan-dengan-air-live-reload-untuk-aplikasi-go-4cd1b4c16b6d)
+```bash
+docker compose up -d db backend frontend
+```
+
+## Environment
+
+| Variabel | Keterangan |
+|----------|------------|
+| `PORT` | Port HTTP server |
+| `DB_CONNECTION` | Driver DSN (`postgres`) |
+| `DB_HOST`, `DB_PORT` | Alamat PostgreSQL |
+| `DB_USERNAME`, `DB_PASSWORD`, `DB_DATABASE` | Kredensial database |
+| `DB_SSLMODE` | Mode SSL (default `disable`) |
+| `JWT_SECRET` | Secret penandatangan JWT |
+| `PISTON_URL` | Base URL Piston untuk sandbox (default `http://localhost:2000`) |
+| `NEO4J_*`, `MONGODB_*`, `ELASTIC_*`, `GCP_BUCKET_NAME` | Disiapkan untuk kebutuhan mendatang; **belum dipakai** saat ini |
+
+## Sandbox eksekusi kode
+
+`POST /api/v1/code/run` (butuh JWT) meneruskan kode Java ke Piston dan
+mengembalikan `{ stdout, stderr, code }`. Endpoint ini dipakai halaman
+`/sandbox` di frontend.
+
+## Role & akses
+
+Role user bersifat statis: `admin`, `teacher`, `student` (tidak ada tabel role).
+Route terlindungi `middleware.JWTMiddleware()`; operasi tulis admin memakai
+`middleware.RequireRole("admin")`.
