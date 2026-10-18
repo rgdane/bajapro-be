@@ -52,6 +52,10 @@ services:
       DB_SSLMODE: disable
       JWT_SECRET: ${JWT_SECRET:-ubah-secret-ini}
       PISTON_URL: http://piston:2000
+      UPLOAD_DIR: /app/uploads
+    volumes:
+      # Gambar upload harus persisten lintas rebuild container.
+      - uploads_data:/app/uploads
     ports:
       - "8080:8080"
     networks: [bajapro]
@@ -85,6 +89,7 @@ services:
 volumes:
   db_data:
   piston_data:
+  uploads_data:
 
 networks:
   bajapro:

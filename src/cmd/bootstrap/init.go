@@ -1,6 +1,8 @@
 package bootstrap
 
 import (
+	"os"
+
 	"jk-api/api/http/routes/v1"
 	"jk-api/internal/config"
 	"jk-api/internal/container"
@@ -32,6 +34,15 @@ func InitPostgres() {
 
 func InitFiber() {
 	app := config.InitFiberApp()
+
+	// Sajikan file hasil upload (gambar) secara statis di /uploads.
+	uploadDir := os.Getenv("UPLOAD_DIR")
+	if uploadDir == "" {
+		uploadDir = "./uploads"
+	}
+	_ = os.MkdirAll(uploadDir, 0o755)
+	app.Static("/uploads", uploadDir)
+
 	routes.Setup(app, container.NewAppContainer())
 	config.Logger.Infof("✅ REST API started on port %s", config.AppConfig.AppPort)
 

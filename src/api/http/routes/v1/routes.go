@@ -27,4 +27,5 @@ func Setup(app *fiber.App, c *container.AppContainer) {
 	TWonderingScoreRoute(api, c)
 	TEssayAnswerRoute(api, c)
 	CodeRoutes(api, c)
+	UploadRoutes(api, c)
 }
